@@ -46,6 +46,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  overflow: hidden;
+}
+
 body {
   background-color: var(--bg);
   height: 100vh;
@@ -72,49 +76,43 @@ body::after {
 
 /* ============ PHYSICAL OBJECT SHADOWS ============ */
 .deco-shadow {
-  filter: drop-shadow(4px 4px 3px rgba(0,0,0,0.16))
-          drop-shadow(16px 16px 6px rgba(0,0,0,0.08))
-          drop-shadow(40px 40px 10px rgba(0,0,0,0.04));
+  filter: drop-shadow(4px 4px 2px rgba(0,0,0,0.28))
+          drop-shadow(10px 10px 4px rgba(0,0,0,0.20))
+          drop-shadow(22px 22px 6px rgba(0,0,0,0.14))
+          drop-shadow(40px 40px 10px rgba(0,0,0,0.09))
+          drop-shadow(64px 64px 16px rgba(0,0,0,0.05))
+          drop-shadow(90px 90px 24px rgba(0,0,0,0.03));
 }
 
-/* ============ ANIMATION KEYFRAMES ============ */
-@keyframes cardEnter {
-  from { opacity: 0; transform: var(--base-transform, none) scale(0.97) translateY(8px); }
-  to { opacity: 1; transform: var(--base-transform, none) scale(1) translateY(0); }
+/* ============ SCENE ENTRANCE ============ */
+.scene-element {
+  transition: opacity 700ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 700ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
 }
 
-@keyframes decoEnter {
-  from { opacity: 0; transform: var(--base-transform, none) scale(0.95) rotate(var(--enter-twist, 3deg)); }
-  to { opacity: 1; transform: var(--base-transform, none) scale(1) rotate(0deg); }
+.scene-element.hidden {
+  opacity: 0;
 }
 
-.anim-card { opacity: 0; animation: cardEnter 280ms var(--ease-out-quint) forwards; }
-.anim-deco { opacity: 0; animation: decoEnter 300ms var(--ease-out-quint) forwards; }
+.scene-element.slide-up.hidden {
+  transform: translateY(120px);
+}
 
-.d1 { animation-delay: 0ms; }
-.d2 { animation-delay: 70ms; }
-.d3 { animation-delay: 140ms; }
-.d4 { animation-delay: 210ms; }
-.d5 { animation-delay: 280ms; }
-.d6 { animation-delay: 350ms; }
-.d7 { animation-delay: 420ms; }
-.d8 { animation-delay: 490ms; }
-.d9 { animation-delay: 560ms; }
-.d10 { animation-delay: 630ms; }
-.d11 { animation-delay: 700ms; }
-.d12 { animation-delay: 770ms; }
-.d13 { animation-delay: 840ms; }
-.d14 { animation-delay: 910ms; }
-.d15 { animation-delay: 980ms; }
-.d16 { animation-delay: 1050ms; }
+.scene-element.slide-left.hidden {
+  transform: translateX(-200px);
+}
+
+.scene-element.slide-right.hidden {
+  transform: translateX(200px);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .anim-card, .anim-deco { animation: none; opacity: 1; }
 }
 
-/* Right-side physical objects: tuck away on small screens */
 @media (max-width: 1200px) {
-  .deco-right { right: -80% !important; }
+  .modal-title { font-size: 11px !important; }
 }
 
 /* ============ CENTER TEXT ============ */
@@ -176,7 +174,9 @@ body::after {
 
 /* ============ ELEMENT STYLES ============ */
 .positioned { position: absolute; display: flex; align-items: center; justify-content: center; }
+.positioned:hover { z-index: 60; }
 .deco-img { position: absolute; pointer-events: none; }
+
 
 .notes-slide {
   transform: translateZ(0);
@@ -187,6 +187,32 @@ body::after {
     transform: var(--base-transform, rotate(-9deg)) translateX(-30px) translateZ(0);
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   }
+}
+
+/* ============ CARD SHADOW HOVER TOGGLE ============ */
+/* Both shadows are always mounted (no React re-renders); CSS swaps which is visible. */
+.card-shadow-host .shadow-noir,
+.card-shadow-host .shadow-thermal {
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.card-shadow-host .shadow-thermal { opacity: 0; }
+.card-shadow-host:hover .shadow-noir { opacity: 0; }
+.card-shadow-host:hover .shadow-thermal { opacity: 1; }
+
+/* ============ HOVER SPOTLIGHT OVERLAY ============ */
+.hover-spotlight-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+  will-change: opacity;
+}
+body.any-card-hovered .hover-spotlight-overlay {
+  opacity: 1;
 }
 
 /* ============ CARD MODAL ============ */

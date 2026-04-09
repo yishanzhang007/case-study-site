@@ -10,11 +10,12 @@ export default function useSpreadLayout(sceneRef) {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    // Collect elements and their original left positions
-    const els = scene.querySelectorAll('[class*="positioned"], [class*="deco-img"]');
+    // Collect elements and their original left positions from data attributes (immutable source of truth)
+    const els = scene.querySelectorAll('[data-orig-left]');
     const elData = [];
     els.forEach((el) => {
-      const left = parseFloat(el.style.left);
+      if (el.style.position === 'fixed') return;
+      const left = parseFloat(el.dataset.origLeft);
       if (!isNaN(left)) {
         const isDeco = el.classList.contains('deco-img');
         elData.push({ el, origLeft: left, isDeco });
@@ -25,13 +26,23 @@ export default function useSpreadLayout(sceneRef) {
     function updateScene() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const spread = (vw - BASE_WIDTH) / BASE_WIDTH;
+      const extraWidth = vw - BASE_WIDTH;
+      const halfShift = extraWidth / 2;
 
       // Batch all DOM writes together (no reads between writes)
       const updates = elDataRef.current.map((d) => {
-        const distFromCenter = d.origLeft - CENTER_X;
-        const factor = spread >= 0 ? spread * 0.35 : spread * 0.4;
-        return { el: d.el, left: d.origLeft + distFromCenter * factor };
+        const isLeftGroup = d.origLeft < CENTER_X;
+        let newLeft;
+        if (extraWidth >= 0) {
+          // Group-based: left cards anchor to viewport-left, right cards anchor to viewport-right
+          newLeft = d.origLeft + (isLeftGroup ? -halfShift : halfShift);
+        } else {
+          // Narrow viewport: keep existing inward compression
+          const spread = extraWidth / BASE_WIDTH;
+          const distFromCenter = d.origLeft - CENTER_X;
+          newLeft = d.origLeft + distFromCenter * spread * 0.4;
+        }
+        return { el: d.el, left: newLeft };
       });
       updates.forEach(({ el, left }) => { el.style.left = left + 'px'; });
 
@@ -43,8 +54,21 @@ export default function useSpreadLayout(sceneRef) {
       scene.style.marginLeft = ((vw - BASE_WIDTH) / 2) + 'px';
     }
 
-    updateScene();
-    window.addEventListener('resize', updateScene);
-    return () => window.removeEventListener('resize', updateScene);
+    let pendingFrame = null;
+    function scheduleUpdate() {
+      if (pendingFrame !== null) return;
+      pendingFrame = requestAnimationFrame(() => {
+        pendingFrame = null;
+        updateScene();
+      });
+    }
+
+    updateScene(); // initial synchronous run for correct first paint
+    window.addEventListener('resize', scheduleUpdate);
+    return () => {
+      window.removeEventListener('resize', scheduleUpdate);
+      if (pendingFrame !== null) cancelAnimationFrame(pendingFrame);
+      elDataRef.current = [];
+    };
   }, [sceneRef]);
 }
