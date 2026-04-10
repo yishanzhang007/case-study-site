@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HalftoneDots, Dithering } from '@paper-design/shaders-react';
+import { Shader, Dither, GridDistortion, Plasma, WaveDistortion } from 'shaders/react';
 import { FunkyShadow } from 'funky-shadow';
 import useSpreadLayout from './useSpreadLayout';
 
@@ -207,7 +208,9 @@ const RETRO_SHADOW = {
 export default function App() {
   const sceneRef = useRef(null);
   const [activeCard, setActiveCard] = useState(null);
+  const [originRect, setOriginRect] = useState(null);
   const [sceneReady, setSceneReady] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   useSpreadLayout(sceneRef);
 
   // Hover handlers — toggle a body class instead of React state to avoid re-rendering
@@ -219,6 +222,17 @@ export default function App() {
     document.body.classList.remove('any-card-hovered');
   }, []);
 
+  // Capture the source card's bounding rect on click so the modal can morph
+  // out of (and back into) the card's position.
+  const handleCardClick = useCallback((cardKey) => (event) => {
+    const wrapper = event.currentTarget.closest('.positioned');
+    if (wrapper) {
+      const r = wrapper.getBoundingClientRect();
+      setOriginRect({ x: r.x, y: r.y, width: r.width, height: r.height });
+    }
+    setActiveCard(cardKey);
+  }, []);
+
   // Close on Escape
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') setActiveCard(null); };
@@ -226,9 +240,9 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
-  // Delay scene entrance
+  // Delay scene entrance — paper lands at ~700ms, then pause, then cards slide in
   useEffect(() => {
-    const timer = setTimeout(() => setSceneReady(true), 1000);
+    const timer = setTimeout(() => setSceneReady(true), 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -240,13 +254,35 @@ export default function App() {
 
   return (
     <>
-      <DotBackground />
-
-      {/* ====== BACKGROUND SHADOW BLOBS ====== */}
-      <div className="bg-shadow" style={{ left: '-5%', top: '10%', width: 600, height: 500, background: 'rgba(180, 170, 155, 0.08)', filter: 'blur(60px)' }} />
-      <div className="bg-shadow" style={{ left: '30%', top: '35%', width: 500, height: 500, background: 'rgba(160, 155, 145, 0.06)', filter: 'blur(50px)' }} />
-      <div className="bg-shadow" style={{ right: '5%', bottom: '10%', width: 700, height: 600, background: 'rgba(150, 160, 170, 0.07)', filter: 'blur(70px)' }} />
-      <div className="bg-shadow" style={{ right: '10%', top: '5%', width: 400, height: 400, background: 'rgba(200, 180, 150, 0.05)', filter: 'blur(50px)' }} />
+      {/* ====== SHADER BACKGROUND ====== */}
+      <Shader style={{ position: 'fixed', inset: 0, zIndex: -10, pointerEvents: 'none' }}>
+        <Dither
+          colorA="#ffffff"
+          colorB="#dbdbdb"
+          pattern="bayer8"
+          pixelSize={3}
+          spread={0.97}
+          threshold={0.42}
+          transform={{ scale: 1.33 }}>
+          <Plasma
+            colorA="#ffffff"
+            colorB="#0f0f0f"
+            contrast={0.9}
+            density={0.3}
+            intensity={1.6}
+            speed={1}
+            warp={0.52} />
+          <WaveDistortion
+            angle={6}
+            edges="mirror"
+            frequency={1.8}
+            speed={1.5}
+            transform={{ rotation: 16 }}
+            visible={true}
+            waveType="sawtooth" />
+        </Dither>
+        <GridDistortion gridSize={53} intensity={3.6} />
+      </Shader>
 
       <div className="scene" ref={sceneRef}>
 
@@ -289,10 +325,10 @@ export default function App() {
         </div>
 
 
-        {/* ====== PUSH PINS ====== */}
-        <div className={`deco-img scene-element slide-left${sceneReady ? '' : ' hidden'}`} style={{ position: 'fixed', left: 40, bottom: 180, width: 160, height: 160, zIndex: 30 }}>
+        {/* ====== PUSH PINS (hidden) ====== */}
+        {/* <div className={`deco-img scene-element slide-left${sceneReady ? '' : ' hidden'}`} style={{ position: 'fixed', left: 40, bottom: 120, width: 160, height: 160, zIndex: 30, '--stagger-delay': '0ms' }}>
           <img src="/assets/push-pins.png" alt="" className="deco-shadow" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-        </div>
+        </div> */}
 
         {/* ====== DUCT TAPE ====== */}
         <div className="deco-img anim-deco d14" style={{ left: 800, top: -30, width: 120, height: 120, transform: 'rotate(10deg)', opacity: 0.7, zIndex: 10, display: 'none' }}>
@@ -300,14 +336,9 @@ export default function App() {
         </div>
 
         {/* ====== SCHEDULING CARD (bottom-left) ====== */}
-        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="-56" style={{ left: -56, bottom: -370, width: 514.714, height: 497.78, visibility: activeCard === 'scheduling' ? 'hidden' : 'visible' }}>
+        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="-56" data-card-width="411" style={{ left: -56, bottom: -370, width: 514.714, height: 497.78, visibility: activeCard === 'scheduling' ? 'hidden' : 'visible', '--stagger-delay': '60ms' }}>
           <div className="card-shadow-host" style={{ transform: 'rotate(6.71deg)', '--base-transform': 'rotate(6.71deg)', position: 'relative', width: 411, height: 424 }}>
-            <div style={{ position: 'absolute', top: -5, left: -100, zIndex: -2, transform: 'rotate(-12deg)' }}>
-              <img src="/assets/paper.svg" alt="" style={{ width: 524, height: 'auto', display: 'block' }} />
-            </div>
-            <div style={{ position: 'absolute', top: -10, left: -55, zIndex: -1, transform: 'rotate(-8deg)' }}>
-              <img src="/assets/paper.svg" alt="" style={{ width: 524, height: 'auto', display: 'block' }} />
-            </div>
+            {/* Paper backgrounds hidden for now */}
             <div className="shadow-noir" style={{ position: 'absolute', inset: 0, zIndex: -1 }}>
               <FunkyShadow width={411} height={424} radius={12} {...NOIR_SHADOW}>
                 <div style={{ width: 411, height: 424 }} />
@@ -318,14 +349,14 @@ export default function App() {
                 <div style={{ width: 411, height: 424 }} />
               </FunkyShadow>
             </div>
-            <motion.div layoutId="scheduling" whileHover={{ y: -24, rotate: -0.5 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={() => setActiveCard('scheduling')} style={{ cursor: 'pointer', position: 'relative' }}>
+            <motion.div layoutId="scheduling" whileHover={{ y: -24, rotate: -0.5 }} whileTap={{ scale: 0.97 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={handleCardClick('scheduling')} style={{ cursor: 'pointer', position: 'relative' }}>
               <img src="/assets/scheduling.svg" alt="Scheduling settings" style={{ width: 411, height: 'auto', display: 'block', borderRadius: 12, border: 'none', backdropFilter: 'none', WebkitBackdropFilter: 'none', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'subpixel-antialiased' }} />
             </motion.div>
           </div>
         </div>
 
         {/* ====== CHAT / RESCHEDULE CARD (bottom-center) ====== */}
-        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="339" style={{ left: 339, bottom: -340, width: 661.893, height: 339.538, visibility: activeCard === 'onboarding' ? 'hidden' : 'visible' }}>
+        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="339" data-card-width="432" style={{ left: 339, bottom: -340, width: 661.893, height: 339.538, visibility: activeCard === 'onboarding' ? 'hidden' : 'visible', '--stagger-delay': '120ms' }}>
           <div className="card-shadow-host" style={{ transform: 'rotate(-2.41deg)', '--base-transform': 'rotate(-2.41deg)', position: 'relative', width: 432, height: 450 }}>
             {/* Dithering shader background */}
             <div style={{ position: 'absolute', top: -36, left: -16, right: '15%', bottom: -16, transform: 'rotate(-6deg)', zIndex: -1, overflow: 'hidden' }}>
@@ -346,14 +377,14 @@ export default function App() {
                 <div style={{ width: 432, height: 450 }} />
               </FunkyShadow>
             </div>
-            <motion.div layoutId="onboarding" whileHover={{ y: -24, rotate: -0.5 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={() => setActiveCard('onboarding')} style={{ cursor: 'pointer', position: 'relative' }}>
+            <motion.div layoutId="onboarding" whileHover={{ y: -24, rotate: -0.5 }} whileTap={{ scale: 0.97 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={handleCardClick('onboarding')} style={{ cursor: 'pointer', position: 'relative' }}>
               <img src="/assets/Onboarding.svg" alt="Onboarding" style={{ width: 432, height: 'auto', display: 'block', border: 'none', borderRadius: 12, backfaceVisibility: 'hidden', WebkitFontSmoothing: 'subpixel-antialiased', transform: 'rotate(-2deg)' }} />
             </motion.div>
           </div>
         </div>
 
         {/* ====== MEDICATION CARD (bottom-right) ====== */}
-        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="755" style={{ left: 755, bottom: -225, width: 420, height: 300, visibility: activeCard === 'medication' ? 'hidden' : 'visible' }}>
+        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="755" data-card-width="398" style={{ left: 755, bottom: -225, width: 420, height: 300, visibility: activeCard === 'medication' ? 'hidden' : 'visible', '--stagger-delay': '180ms' }}>
           <div className="card-shadow-host" style={{ transform: 'rotate(10.24deg)', '--base-transform': 'rotate(10.24deg)', position: 'relative', width: 398, height: 272 }}>
             <div className="shadow-noir" style={{ position: 'absolute', inset: 0, zIndex: -1 }}>
               <FunkyShadow width={398} height={272} radius={12} {...NOIR_SHADOW}>
@@ -365,14 +396,14 @@ export default function App() {
                 <div style={{ width: 398, height: 272 }} />
               </FunkyShadow>
             </div>
-            <motion.div layoutId="medication" whileHover={{ y: -24, rotate: -0.5 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={() => setActiveCard('medication')} style={{ cursor: 'pointer' }}>
+            <motion.div layoutId="medication" whileHover={{ y: -24, rotate: -0.5 }} whileTap={{ scale: 0.97 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={handleCardClick('medication')} style={{ cursor: 'pointer' }}>
               <img src="/assets/test call.svg" alt="Test call topics" style={{ width: 398, height: 'auto', display: 'block', borderRadius: 12, border: 'none', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'subpixel-antialiased' }} />
             </motion.div>
           </div>
         </div>
 
         {/* ====== NOTES CARD (bottom-right) ====== */}
-        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="1050" style={{ left: 1050, bottom: -486, width: 420 }}>
+        <div className={`positioned scene-element slide-up${sceneReady ? '' : ' hidden'}`} data-orig-left="1050" data-card-width="382" style={{ left: 1050, bottom: -486, width: 420, '--stagger-delay': '240ms' }}>
           <div className="notes-slide card-shadow-host" style={{ transform: 'rotate(-9deg)', '--base-transform': 'rotate(-9deg)', position: 'relative' }}>
             <div className="shadow-noir" style={{ visibility: activeCard === 'notes' ? 'hidden' : 'visible', position: 'absolute', inset: 0, zIndex: -1 }}>
               <FunkyShadow width={382} height={561} radius={14} {...NOIR_SHADOW}>
@@ -384,30 +415,13 @@ export default function App() {
                 <div style={{ width: 382, height: 561 }} />
               </FunkyShadow>
             </div>
-            <motion.div whileHover={{ y: -24, rotate: -0.5 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={() => setActiveCard('notes')} style={{ cursor: 'pointer' }}>
+            <motion.div whileHover={{ y: -24, rotate: -0.5 }} whileTap={{ scale: 0.97 }} onHoverStart={handleCardHover} onHoverEnd={handleCardLeave} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} onClick={handleCardClick('notes')} style={{ cursor: 'pointer' }}>
               <img src="/assets/Notes.svg" alt="Notes panel" style={{ width: 382, height: 'auto', display: 'block', borderRadius: 14, border: 'none', backdropFilter: 'none', WebkitBackdropFilter: 'none', backfaceVisibility: 'hidden', WebkitFontSmoothing: 'subpixel-antialiased' }} />
             </motion.div>
           </div>
         </div>
 
-        {/* ====== GREEN MARKER (on top of UI) ====== */}
-        <div className={`deco-img scene-element slide-right deco-right${sceneReady ? '' : ' hidden'}`} style={{ position: 'fixed', right: -350, top: 40, width: 756, height: 294, zIndex: 20, transform: 'rotate(10deg)' }}>
-          <img src="/assets/green-marker.png" alt="" className="deco-shadow" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-        </div>
-
-        {/* ====== PENCIL (on top of UI) ====== */}
-        <div className={`deco-img scene-element slide-right deco-right${sceneReady ? '' : ' hidden'}`} style={{ position: 'fixed', right: -250, top: 200, width: 346, height: 346, zIndex: 20 }}>
-          <img src="/assets/pencil.png" alt="" className="deco-shadow" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-        </div>
-
-        {/* ====== ERASER (on top of UI) ====== */}
-        <div className={`deco-shadow deco-right scene-element slide-right${sceneReady ? '' : ' hidden'}`} style={{ position: 'fixed', right: -60, top: 200, width: 100, height: 100, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ transform: 'scaleY(-1) rotate(-183.45deg)' }}>
-            <div style={{ width: 311.123, height: 311.123 }}>
-              <img src="/assets/eraser.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-          </div>
-        </div>
+        {/* ====== GREEN MARKER, PENCIL, ERASER (hidden for now) ====== */}
 
 
       </div>
@@ -415,23 +429,22 @@ export default function App() {
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
         <div className="center-text-shadow" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 290, top: -40, width: 91, height: 91, zIndex: 20, pointerEvents: 'none', filter: 'drop-shadow(1px 1px 1px rgba(0,0,0,0.08))' }}>
-          <img src="/assets/tape.svg" alt="" style={{ width: '100%', height: '100%', transform: 'rotate(-11deg)' }} />
-        </div>
+        {/* Tape hidden for now */}
         <div className="center-text" style={{ position: 'relative', padding: '16px', borderRadius: 12, overflow: 'hidden' }}>
           {/* Text content — mix-blend-mode makes text look printed on paper */}
           <div style={{ position: 'relative', zIndex: 1, mixBlendMode: 'multiply' }}>
             {/* About */}
-            <p style={{ opacity: 0.5, marginBottom: 8 }}>about</p>
-            <p>hi, i'm yishan. before this, i was an architect, and that perspective still shapes how i think about building products.</p>
-            <p style={{ marginTop: 16 }}>to me, a great product goes far beyond great design. i care deeply about all aspects of it and practice it daily - research to understand, create roadmap to drive real impact, design to create clarity, code to elevate, and lead design teams to bring it all to life at scale.</p>
+            <p style={{ opacity: 0.5, marginBottom: 0 }}>about</p>
+            <p>hi, i'm yishan. i used to be an architect, and i still judge things the same way i judged buildings: does it stand up, does it make sense to be in, does it work for real people?</p>
+            <p style={{ marginTop: 10 }}>that's probably why i can't pick one role — research, design, code, leading teams. a great product is beyond design, and i care deeply about every aspect of it.</p>
+            <p style={{ marginTop: 10 }}>right now i'm spending a lot of time with ai tools. not in a "future of work" way — more: how to move faster, try weirder ideas, and maybe finally take a crack at problems i'd always shelved as too hard.</p>
 
             {/* Recent Work */}
-            <p style={{ opacity: 0.5, marginTop: 40, marginBottom: 8 }}>recent work</p>
+            <p style={{ opacity: 0.5, marginTop: 24, marginBottom: 0 }}>recent work</p>
             <p>ai front desk assistant at Freed.ai;<br />automatic tax filing at Shopify;<br />analytics platform at DevRev.</p>
 
             {/* Connect */}
-            <p style={{ opacity: 0.5, marginTop: 40, marginBottom: 8 }}>connect</p>
+            <p style={{ opacity: 0.5, marginTop: 24, marginBottom: 0 }}>connect</p>
             <p><a href="mailto:yishan.zhang007@gmail.com" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>say hi</a>, or find me <a href="https://www.linkedin.com/in/yishanzhang/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>here</a>.</p>
           </div>
         </div>
@@ -443,7 +456,7 @@ export default function App() {
       <div className="hover-spotlight-overlay" />
 
       {/* ====== CARD MODAL ====== */}
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => setOriginRect(null)}>
         {activeCard && CARD_CONFIGS[activeCard] && (
           <motion.div
             className="card-modal-backdrop"
@@ -453,39 +466,60 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <motion.div
-              layoutId={CARD_CONFIGS[activeCard].customModal ? undefined : activeCard}
-              className="card-modal-content"
-              transition={springTransition}
-              initial={CARD_CONFIGS[activeCard].customModal ? { opacity: 0, scale: 0.95 } : false}
-              animate={CARD_CONFIGS[activeCard].customModal ? { opacity: 1, scale: 1 } : undefined}
-              exit={CARD_CONFIGS[activeCard].customModal ? { opacity: 0, scale: 0.95 } : undefined}
-              style={{ position: 'relative', willChange: 'transform' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <button
-                onClick={() => setActiveCard(null)}
-                style={{
-                  position: 'absolute', top: 12, right: 12, zIndex: 10,
-                  width: 24, height: 24, borderRadius: '50%',
-                  background: 'none', border: 'none',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1,
-                }}
-              >
-                ✕
-              </button>
+            {CARD_CONFIGS[activeCard].customModal ? (() => {
+              // Compute the rect-based morph frame from the captured source card.
+              const VW = window.innerWidth;
+              const VH = window.innerHeight;
+              const MW = VW - 32;
+              const MH = VH - 32;
+              const initialFrame = originRect ? (() => {
+                const cx = originRect.x + originRect.width / 2;
+                const cy = originRect.y + originRect.height / 2;
+                const mx = 16 + MW / 2;
+                const my = 16 + MH / 2;
+                return {
+                  scaleX: originRect.width / MW,
+                  scaleY: originRect.height / MH,
+                  x: cx - mx,
+                  y: cy - my,
+                };
+              })() : null;
 
-              {CARD_CONFIGS[activeCard].customModal ? (
-                /* Fullscreen dithering shader + SVG overlay */
-                <div style={{
-                  width: 'calc(100vw - 32px)',
-                  height: 'calc(100vh - 32px)',
-                  borderRadius: CARD_CONFIGS[activeCard].radius,
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}>
+              const morphTransition = { duration: 0.42, ease: [0.23, 1, 0.32, 1] };
+              const exitTransition = { duration: 0.6, ease: [0.23, 1, 0.32, 1] };
+
+              return (
+                <motion.div
+                  className="card-modal-content"
+                  style={{
+                    position: 'fixed',
+                    top: 16,
+                    left: 16,
+                    width: 'calc(100vw - 32px)',
+                    height: 'calc(100vh - 32px)',
+                    borderRadius: CARD_CONFIGS[activeCard].radius,
+                    overflow: 'hidden',
+                    transformOrigin: 'center center',
+                    willChange: 'transform, opacity',
+                  }}
+                  initial={
+                    shouldReduceMotion || !initialFrame
+                      ? { opacity: 0 }
+                      : { ...initialFrame, opacity: 1 }
+                  }
+                  animate={
+                    shouldReduceMotion
+                      ? { opacity: 1 }
+                      : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1 }
+                  }
+                  exit={
+                    shouldReduceMotion || !initialFrame
+                      ? { opacity: 0, transition: { duration: 0.18 } }
+                      : { ...initialFrame, opacity: 1, transition: exitTransition }
+                  }
+                  transition={morphTransition}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Dithering
                     speed={{ testcall: 1.78, onboarding: 1, scheduling: 1.56, true: 1.13 }[CARD_CONFIGS[activeCard].customModal] || 1.13}
                     shape={{ testcall: 'ripple', onboarding: 'dots', scheduling: 'swirl', true: 'warp' }[CARD_CONFIGS[activeCard].customModal] || 'warp'}
@@ -501,109 +535,152 @@ export default function App() {
                       height: '100%',
                     }}
                   />
-                  {/* Title — fixed top-left, aligned with close button */}
-                  <div className="modal-title" style={{
-                    position: 'absolute',
-                    top: 12,
-                    left: 12,
-                    zIndex: 10,
-                    background: 'rgba(255,255,255,0.6)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    padding: '4px 6px',
-                    borderRadius: 8,
-                    fontFamily: "'iA Writer Mono', monospace",
-                    fontSize: 14,
-                    letterSpacing: '-0.05em',
-                    textTransform: 'uppercase',
-                    color: 'var(--fg-primary)',
-                    opacity: 0.6,
-                    pointerEvents: 'none',
-                  }}>
-                    {{ testcall: 'Voice agent playground', onboarding: 'Onboarding', scheduling: 'Call routing configuration', true: 'Front desk inbox' }[CARD_CONFIGS[activeCard].customModal] || 'Front desk inbox'}
-                  </div>
-                  {/* SVG overlay */}
-                  <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    pointerEvents: 'none',
-                    paddingTop: 80,
-                    paddingBottom: 80,
-                    paddingLeft: 'clamp(16px, 3vw, 40px)',
-                    paddingRight: 'clamp(16px, 3vw, 40px)',
-                    overflow: 'hidden',
-                  }}>
-                  {CARD_CONFIGS[activeCard].customModal === 'onboarding' ? (
-                    <div style={{
-                      display: 'flex',
-                      gap: 80,
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      justifyContent: 'center',
-                      maxWidth: 'min(1325px, 100%)',
-                      maxHeight: '100%',
-                    }}>
-                      <img src="/assets/full onboarding 1.svg" alt="" style={{ width: 504, maxWidth: '100%', height: 'auto', opacity: 0.85, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
-                      <img src="/assets/full onboarding 2.svg" alt="" style={{ width: 488, maxWidth: '100%', height: 'auto', opacity: 0.85, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
-                    </div>
-                  ) : (
-                    <div style={{
-                      background: 'rgba(255,255,255,0.2)',
+                  {/* Title + content + close — fade in alongside the morph */}
+                  <motion.div
+                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
+                    animate={
+                      shouldReduceMotion
+                        ? { opacity: 1 }
+                        : { opacity: 1, transition: { duration: 0.28 } }
+                    }
+                    exit={{ opacity: 0, transition: { duration: 0.22 } }}
+                    style={{ position: 'absolute', inset: 0 }}
+                  >
+                    {/* Close button */}
+                    <button
+                      onClick={() => setActiveCard(null)}
+                      style={{
+                        position: 'absolute', top: 12, right: 12, zIndex: 11,
+                        width: 24, height: 24, borderRadius: '50%',
+                        background: 'none', border: 'none',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                    {/* Title — fixed top-left, aligned with close button */}
+                    <div className="modal-title" style={{
+                      position: 'absolute',
+                      top: 12,
+                      left: 12,
+                      zIndex: 10,
+                      background: 'rgba(255,255,255,0.6)',
                       backdropFilter: 'blur(8px)',
                       WebkitBackdropFilter: 'blur(8px)',
+                      padding: '1px 6px',
                       borderRadius: 0,
-                      maxWidth: 'min(1325px, 100%)',
-                      maxHeight: '100%',
-                      display: 'flex',
+                      fontFamily: "'iA Writer Mono', monospace",
+                      fontSize: 14,
+                      letterSpacing: '-0.05em',
+                      textTransform: 'uppercase',
+                      color: 'var(--fg-primary)',
+                      opacity: 0.6,
+                      pointerEvents: 'none',
                     }}>
-                      <img
-                        src={{ testcall: '/assets/test call full.svg', scheduling: '/assets/full settings.svg', true: '/assets/full inbox.svg' }[CARD_CONFIGS[activeCard].customModal] || '/assets/full inbox.svg'}
-                        alt=""
-                        style={{
-                          maxWidth: '100%',
-                          maxHeight: '100%',
-                          width: 'auto',
-                          height: 'auto',
-                          objectFit: 'contain',
-                          display: 'block',
-                          opacity: 0.85,
-                          borderRadius: 0,
-                        }}
-                      />
+                      {{ testcall: 'Voice agent playground', onboarding: 'Onboarding', scheduling: 'Call routing', true: 'Front desk inbox' }[CARD_CONFIGS[activeCard].customModal] || 'Front desk inbox'}
                     </div>
-                  )}
-                  </div>
-                </div>
-              ) : CARD_CONFIGS[activeCard].fullscreen ? (
-                <img
-                  src={CARD_CONFIGS[activeCard].src}
-                  alt=""
+                    {/* SVG overlay */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      pointerEvents: 'none',
+                      paddingTop: 80,
+                      paddingBottom: 80,
+                      paddingLeft: 'clamp(16px, 3vw, 40px)',
+                      paddingRight: 'clamp(16px, 3vw, 40px)',
+                      overflow: 'hidden',
+                    }}>
+                    {CARD_CONFIGS[activeCard].customModal === 'onboarding' ? (
+                      <div style={{
+                        display: 'flex',
+                        gap: 80,
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        maxWidth: 'min(1325px, 100%)',
+                        maxHeight: '100%',
+                      }}>
+                        <img src="/assets/full onboarding 1.svg" alt="" style={{ width: 504, maxWidth: '100%', height: 'auto', opacity: 0.85, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
+                        <img src="/assets/full onboarding 2.svg" alt="" style={{ width: 488, maxWidth: '100%', height: 'auto', opacity: 0.85, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
+                      </div>
+                    ) : (
+                      <div style={{
+                        background: 'rgba(255,255,255,0.2)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        borderRadius: 0,
+                        maxWidth: 'min(1325px, 100%)',
+                        display: 'flex',
+                      }}>
+                        <img
+                          src={{ testcall: '/assets/test call full.svg', scheduling: '/assets/full settings.svg', true: '/assets/full inbox.svg' }[CARD_CONFIGS[activeCard].customModal] || '/assets/full inbox.svg'}
+                          alt=""
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            display: 'block',
+                            opacity: 0.85,
+                            borderRadius: 0,
+                          }}
+                        />
+                      </div>
+                    )}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              );
+            })() : (
+              <motion.div
+                layoutId={activeCard}
+                className="card-modal-content"
+                transition={springTransition}
+                style={{ position: 'relative', willChange: 'transform' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setActiveCard(null)}
                   style={{
-                    width: 'calc(100vw - 64px)',
-                    height: 'calc(100vh - 64px)',
-                    objectFit: 'contain',
-                    display: 'block',
-                    borderRadius: CARD_CONFIGS[activeCard].radius,
+                    position: 'absolute', top: 12, right: 12, zIndex: 10,
+                    width: 24, height: 24, borderRadius: '50%',
+                    background: 'none', border: 'none',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1,
                   }}
-                />
-              ) : (
-                <img
-                  src={CARD_CONFIGS[activeCard].src}
-                  alt=""
-                  style={{
-                    width: '80vw',
-                    maxWidth: 800,
-                    height: 'auto',
-                    display: 'block',
-                    borderRadius: CARD_CONFIGS[activeCard].radius,
-                  }}
-                />
-              )}
-            </motion.div>
+                >
+                  ✕
+                </button>
+                {CARD_CONFIGS[activeCard].fullscreen ? (
+                  <img
+                    src={CARD_CONFIGS[activeCard].src}
+                    alt=""
+                    style={{
+                      width: 'calc(100vw - 64px)',
+                      height: 'calc(100vh - 64px)',
+                      objectFit: 'contain',
+                      display: 'block',
+                      borderRadius: CARD_CONFIGS[activeCard].radius,
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={CARD_CONFIGS[activeCard].src}
+                    alt=""
+                    style={{
+                      width: '80vw',
+                      maxWidth: 800,
+                      height: 'auto',
+                      display: 'block',
+                      borderRadius: CARD_CONFIGS[activeCard].radius,
+                    }}
+                  />
+                )}
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

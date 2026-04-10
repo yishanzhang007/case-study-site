@@ -7,6 +7,14 @@
 }
 
 @font-face {
+  font-family: 'Tobias';
+  src: url('/assets/Tobias-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'NType82';
   src: url('/assets/NType82-Regular.otf') format('opentype');
   font-weight: 400;
@@ -32,7 +40,7 @@
 
 :root {
   --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
-  --bg: #fcfcfb;
+  --bg: #ffffff;
   --fg-primary: #21201d;
   --fg-secondary: #666561;
   --fg-muted: #82807c;
@@ -72,6 +80,8 @@ body::after {
   width: 1440px;
   position: relative;
   overflow: visible;
+  transform: scale(0.8);
+  transform-origin: center bottom;
 }
 
 /* ============ PHYSICAL OBJECT SHADOWS ============ */
@@ -86,8 +96,9 @@ body::after {
 
 /* ============ SCENE ENTRANCE ============ */
 .scene-element {
-  transition: opacity 700ms cubic-bezier(0.23, 1, 0.32, 1),
-              transform 700ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition: opacity 500ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 500ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition-delay: var(--stagger-delay, 0ms);
   will-change: transform, opacity;
 }
 
@@ -109,6 +120,11 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   .anim-card, .anim-deco { animation: none; opacity: 1; }
+  .scene-element {
+    transition: none;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -119,38 +135,48 @@ body::after {
 .center-text-wrap {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  z-index: 10; pointer-events: none; padding: 0 16px 160px;
+  z-index: 10; pointer-events: none; padding: 16px;
+  padding-bottom: clamp(100px, 15vh, 200px);
 }
 
 .center-text {
-  max-width: 440px; width: 100%;
-  font-family: 'iA Writer Mono', monospace;
-  font-weight: 400;
-  font-size: 14px; line-height: 20px; letter-spacing: -0.05em;
+  max-width: 400px; width: 100%;
+  pointer-events: auto;
+  font-family: 'Tobias', serif;
+  font-weight: 300;
+  font-size: 14px; line-height: 20px; letter-spacing: -0.01em;
   color: var(--fg-primary); text-align: left;
   opacity: 0; animation: centerTextEnter 280ms var(--ease-out-quint) 420ms forwards;
-  background: rgba(255,255,255,0.85);
-  padding: 40px 36px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 12px;
+  max-height: 100%;
+  overflow-y: auto;
   position: relative;
-  /* Rough paper edge using polygon clip-path */
-  clip-path: polygon(
-    2% 0%, 5% 0.5%, 8% 0%, 12% 0.3%, 16% 0%, 20% 0.4%, 25% 0%, 30% 0.2%, 35% 0%, 40% 0.5%, 45% 0%, 50% 0.3%, 55% 0%, 60% 0.4%, 65% 0%, 70% 0.2%, 75% 0%, 80% 0.5%, 85% 0%, 90% 0.3%, 95% 0%, 98% 0.4%, 100% 0%,
-    100% 3%, 99.6% 7%, 100% 12%, 99.7% 17%, 100% 22%, 99.5% 28%, 100% 33%, 99.8% 38%, 100% 44%, 99.6% 50%, 100% 56%, 99.7% 62%, 100% 68%, 99.5% 74%, 100% 80%, 99.7% 86%, 100% 92%, 99.6% 96%, 100% 100%,
-    98% 100%, 95% 99.6%, 90% 100%, 85% 99.7%, 80% 100%, 75% 99.5%, 70% 100%, 65% 99.7%, 60% 100%, 55% 99.6%, 50% 100%, 45% 99.5%, 40% 100%, 35% 99.7%, 30% 100%, 25% 99.6%, 20% 100%, 15% 99.7%, 10% 100%, 5% 99.5%, 2% 100%, 0% 100%,
-    0% 96%, 0.4% 92%, 0% 86%, 0.3% 80%, 0% 74%, 0.5% 68%, 0% 62%, 0.3% 56%, 0% 50%, 0.4% 44%, 0% 38%, 0.3% 33%, 0% 28%, 0.5% 22%, 0% 17%, 0.3% 12%, 0% 7%, 0.4% 3%, 0% 0%
-  );
 }
 
 .center-text-shadow {
-  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.06))
-          drop-shadow(2px 2px 2px rgba(0,0,0,0.04))
-          drop-shadow(4px 4px 3px rgba(0,0,0,0.03));
 }
 
-@keyframes centerTextEnter { from { opacity: 0; } to { opacity: 0.9; } }
+.center-tape {
+  opacity: 0;
+  animation: tapeEnter 280ms var(--ease-out-quint) 420ms forwards;
+}
+
+@media (max-height: 800px) {
+  .center-text { max-width: 520px; }
+}
+@media (max-height: 600px) {
+  .center-text { max-width: 640px; }
+}
+
+@keyframes centerTextEnter { from { opacity: 0; } to { opacity: 0.95; } }
+@keyframes tapeEnter { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .center-text { animation: none; opacity: 1; }
+  .center-text, .center-tape { animation: none; opacity: 1; }
 }
 
 /* ============ CENTER NAV ============ */
@@ -180,12 +206,11 @@ body::after {
 
 .notes-slide {
   transform: translateZ(0);
-  transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 @media (hover: hover) and (pointer: fine) {
   .notes-slide:hover {
     transform: var(--base-transform, rotate(-9deg)) translateX(-30px) translateZ(0);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   }
 }
 
@@ -208,7 +233,7 @@ body::after {
   background: rgba(255, 255, 255, 0.7);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 150ms ease-out;
+  transition: opacity 200ms ease-out;
   will-change: opacity;
 }
 body.any-card-hovered .hover-spotlight-overlay {
