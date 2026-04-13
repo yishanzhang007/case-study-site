@@ -136,11 +136,11 @@ body::after {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
   z-index: 10; pointer-events: none; padding: 16px;
-  padding-bottom: clamp(100px, 15vh, 200px);
+  padding-bottom: clamp(120px, 20vh, 200px);
 }
 
 .center-text {
-  max-width: 400px; width: 100%;
+  max-width: 480px; width: 100%;
   pointer-events: auto;
   font-family: 'Tobias', serif;
   font-weight: 300;
@@ -149,15 +149,12 @@ body::after {
   opacity: 0; animation: centerTextEnter 280ms var(--ease-out-quint) 420ms forwards;
   padding: 24px;
   background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border-radius: 12px;
   max-height: 100%;
   overflow-y: auto;
   position: relative;
-}
-
-.center-text-shadow {
 }
 
 .center-tape {
@@ -166,13 +163,13 @@ body::after {
 }
 
 @media (max-height: 800px) {
-  .center-text { max-width: 520px; }
+  .center-text { max-width: 480px; }
 }
 @media (max-height: 600px) {
-  .center-text { max-width: 640px; }
+  .center-text { max-width: 480px; }
 }
 
-@keyframes centerTextEnter { from { opacity: 0; } to { opacity: 0.95; } }
+@keyframes centerTextEnter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes tapeEnter { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -189,6 +186,93 @@ body::after {
 .center-nav a:hover { opacity: 0.5; }
 
 .center-nav a.active { color: #EF5E06; }
+
+/* ============ BOTTOM NAV BUTTONS ============ */
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+  max-width: calc(100% - 32px);
+  align-items: flex-end;
+  /* >800: nowrap, all buttons beside card */
+  flex-wrap: nowrap;
+}
+
+/* <480: very narrow — stack vertically, anchored to viewport left edge.
+   When a button is hovered, siblings display:none so the expanded card
+   (viewport-32 wide) centers naturally within the 16px horizontal gutter. */
+@media (max-width: 479px) {
+  .bottom-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    transform: none;
+    max-width: none;
+  }
+  .center-text-wrap {
+    padding: 12px;
+    padding-bottom: clamp(120px, 20vh, 200px);
+  }
+}
+
+/* Short screens — push text up so buttons are visible */
+@media (max-height: 700px) {
+  .center-text-wrap {
+    align-items: flex-start;
+    padding-top: 16px;
+    padding-bottom: 140px;
+  }
+}
+
+.nav-btn {
+  font-family: 'Tobias', serif;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--fg-primary);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 150ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.nav-card-expanded {
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+/* ============ FULLSCREEN MODAL SVG OVERLAY ============ */
+/* Default: pin content to the top so long SVGs read top-down */
+.fullscreen-modal-svg-overlay {
+  justify-content: flex-start;
+}
+/* On narrow portrait viewports (phones), center the SVG vertically */
+@media (max-width: 639px) and (orientation: portrait) {
+  .fullscreen-modal-svg-overlay {
+    justify-content: center;
+  }
+}
 
 /* ============ BACKGROUND SHADOW BLOBS ============ */
 .bg-shadow {
