@@ -164,7 +164,13 @@ export default function App() {
 
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
-        <div className="center-text" style={{ padding: '16px', borderRadius: 12 }}>
+        <motion.div
+          className="center-text"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.28, delay: 0.42, ease: [0.23, 1, 0.32, 1] }}
+          style={{ padding: '16px', borderRadius: 12 }}
+        >
           <div style={{ position: 'relative', zIndex: 1, maxHeight: '100%', overflowY: 'auto' }}>
             {/* About */}
             <p style={{ color: '#D75606', marginBottom: 0 }}>About</p>
@@ -180,7 +186,7 @@ export default function App() {
             <p style={{ color: '#D75606', marginTop: 24, marginBottom: 0 }}>Connect</p>
             <p><a href="mailto:yishan.zhang007@gmail.com" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>Say hi</a>, or find me <a href="https://www.linkedin.com/in/yishanzhang/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>here</a>.</p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ====== BOTTOM NAV BUTTONS ====== */}
