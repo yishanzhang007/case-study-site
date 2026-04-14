@@ -152,7 +152,7 @@ export default function App() {
 
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
-        <div className="center-text" style={{ padding: '16px', borderRadius: 12, overflow: 'hidden' }}>
+        <div className="center-text" style={{ padding: '16px', borderRadius: 12 }}>
           <div style={{ position: 'relative', zIndex: 1, mixBlendMode: 'multiply' }}>
             {/* About */}
             <p style={{ color: '#D75606', marginBottom: 0 }}>About</p>

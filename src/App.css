@@ -149,13 +149,5 @@ body::after {
   .modal-title { font-size: 11px !important; }
 }
 
-/* Default: pin SVG content to top so long SVGs read top-down */
-.fullscreen-modal-svg-overlay {
-  justify-content: flex-start;
-}
-/* On narrow portrait viewports, center the SVG vertically */
-@media (max-width: 639px) and (orientation: portrait) {
-  .fullscreen-modal-svg-overlay {
-    justify-content: center;
-  }
-}
+/* SVG positioning handled by inline style: justifyContent: 'safe center'
+   — centers when SVG fits, falls back to flex-start when it overflows */
