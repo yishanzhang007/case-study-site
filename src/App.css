@@ -88,7 +88,7 @@ body::after {
   .center-text { animation: none; opacity: 1; }
 }
 
-@media (max-width: 519px) {
+@media (max-width: 549px) {
   .center-text-wrap {
     padding: 12px;
     padding-bottom: clamp(120px, 20vh, 200px);
@@ -115,7 +115,7 @@ body::after {
   align-items: flex-end;
 }
 
-@media (max-width: 519px) {
+@media (max-width: 549px) {
   .bottom-nav {
     flex-direction: column;
     gap: 4px;

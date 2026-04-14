@@ -46,7 +46,7 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
         borderRadius: 12,
         cursor: 'pointer',
         overflow: 'hidden',
-        flexShrink: isActive ? 0 : 1,
+        flexShrink: 0,
         ...hideStyle,
       }}
     >
@@ -61,6 +61,7 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
           fontWeight: 300,
           fontSize: 14,
           letterSpacing: '-0.01em',
+          whiteSpace: 'nowrap',
           overflow: 'hidden',
         }}
       >
@@ -103,14 +104,14 @@ export default function App() {
   // Breakpoint detection
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
-    if (window.innerWidth < 520) return 'small';
+    if (window.innerWidth < 550) return 'small';
     if (window.innerWidth < 800) return 'medium';
     return 'wide';
   });
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setBreakpoint(w < 520 ? 'small' : w < 800 ? 'medium' : 'wide');
+      setBreakpoint(w < 550 ? 'small' : w < 800 ? 'medium' : 'wide');
     };
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
