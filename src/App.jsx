@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Dithering } from '@paper-design/shaders-react';
 import { Shader, Dither, GridDistortion, Plasma, WaveDistortion } from 'shaders/react';
@@ -7,16 +7,28 @@ const EASE = [0.23, 1, 0.32, 1];
 const DURATION = 0.25;
 
 function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, cardHeight, onMouseEnter, onClick }) {
+  const ref = useRef(null);
+  const [collapsed, setCollapsed] = useState(null);
   const enterT = { duration: DURATION, ease: EASE };
   const exitT = { duration: 0.15, ease: [0.4, 0, 1, 1] };
+
+  // Measure collapsed size once on mount (before first paint)
+  useLayoutEffect(() => {
+    if (ref.current && !isActive && !collapsed) {
+      const r = ref.current.getBoundingClientRect();
+      setCollapsed({ w: r.width, h: r.height });
+    }
+  }, [isActive, collapsed]);
+
   return (
     <motion.div
+      ref={ref}
       initial={false}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       animate={{
-        width: isActive ? cardWidth : 'auto',
-        height: isActive ? cardHeight : 'auto',
+        width: isActive ? cardWidth : (collapsed?.w || 'auto'),
+        height: isActive ? cardHeight : (collapsed?.h || 'auto'),
         padding: isActive ? '12px' : '10px 12px',
       }}
       transition={isActive ? enterT : exitT}
@@ -47,7 +59,7 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
       <motion.span
         initial={false}
         animate={{ opacity: isActive ? 0 : 1 }}
-        transition={{ duration: 0.05 }}
+        transition={isActive ? { duration: 0.05 } : { duration: 0.08, delay: 0.12 }}
         style={{
           display: 'block',
           fontFamily: "'Tobias', serif",
@@ -115,7 +127,7 @@ export default function App() {
   return (
     <>
       {/* ====== SHADER BACKGROUND ====== */}
-      <Shader style={{ position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none' }}>
+      <Shader style={{ position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none', opacity: 0, animation: 'shaderFadeIn 600ms ease 300ms forwards' }}>
         <Dither
           colorA="#ffffff"
           colorB="#9e9e9e"
