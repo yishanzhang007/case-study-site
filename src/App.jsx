@@ -62,7 +62,6 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
           fontSize: 14,
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
         }}
       >
         {label}
@@ -104,14 +103,14 @@ export default function App() {
   // Breakpoint detection
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
-    if (window.innerWidth < 550) return 'small';
+    if (window.innerWidth < 480) return 'small';
     if (window.innerWidth < 800) return 'medium';
     return 'wide';
   });
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setBreakpoint(w < 550 ? 'small' : w < 800 ? 'medium' : 'wide');
+      setBreakpoint(w < 480 ? 'small' : w < 800 ? 'medium' : 'wide');
     };
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
@@ -195,8 +194,9 @@ export default function App() {
         onMouseLeave={() => setHoveredBtn(null)}
       >
           {NAV_BUTTONS.map(({ key, label, modal, src }) => {
-            const isActive = hoveredBtn === key;
-            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive;
+            const isSmall = breakpoint === 'small';
+            const isActive = !isSmall && hoveredBtn === key;
+            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive && !isSmall;
             return (
               <BottomNavButton
                 key={key}
@@ -207,7 +207,7 @@ export default function App() {
                 breakpoint={breakpoint}
                 cardWidth={cardWidth}
                 cardHeight={cardHeight}
-                onMouseEnter={() => setHoveredBtn(key)}
+                onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
                 onClick={() => {
                   setActiveCard(modal);
                 }}
@@ -365,8 +365,8 @@ export default function App() {
                         maxWidth: 'min(1325px, 100%)',
                         maxHeight: '100%',
                       }}>
-                        <img src="/assets/full onboarding 1.svg" alt="" style={{ width: 504, maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
-                        <img src="/assets/full onboarding 2.svg" alt="" style={{ width: 488, maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
+                        <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
+                        <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
                       </div>
                     ) : (
                       <div style={{
@@ -382,7 +382,7 @@ export default function App() {
                           src={{ testcall: '/assets/test call full.svg', scheduling: '/assets/full settings.svg', true: '/assets/full inbox.svg' }[CARD_CONFIGS[activeCard].customModal] || '/assets/full inbox.svg'}
                           alt=""
                           style={{
-                            width: '100%',
+                            maxWidth: '100%',
                             height: 'auto',
                             display: 'block',
                             opacity: 0.85,
