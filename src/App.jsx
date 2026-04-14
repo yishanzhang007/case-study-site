@@ -46,11 +46,8 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
       )}
       <motion.span
         initial={false}
-        animate={{
-          opacity: isActive ? 0 : 1,
-          height: isActive ? 0 : 'auto',
-        }}
-        transition={isActive ? enterT : exitT}
+        animate={{ opacity: isActive ? 0 : 1 }}
+        transition={{ duration: 0.05 }}
         style={{
           display: 'block',
           fontFamily: "'Tobias', serif",
@@ -118,7 +115,7 @@ export default function App() {
   return (
     <>
       {/* ====== SHADER BACKGROUND ====== */}
-      <Shader style={{ position: 'fixed', inset: 0, zIndex: -10, pointerEvents: 'none' }}>
+      <Shader style={{ position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none' }}>
         <Dither
           colorA="#ffffff"
           colorB="#9e9e9e"
