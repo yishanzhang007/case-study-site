@@ -46,7 +46,7 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
         borderRadius: 12,
         cursor: 'pointer',
         overflow: 'hidden',
-        flexShrink: 0,
+        flexShrink: isActive ? 0 : 1,
         ...hideStyle,
       }}
     >
@@ -61,7 +61,6 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
           fontWeight: 300,
           fontSize: 14,
           letterSpacing: '-0.01em',
-          whiteSpace: 'nowrap',
           overflow: 'hidden',
         }}
       >
