@@ -45,7 +45,7 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
         WebkitBackdropFilter: 'blur(4px)',
         borderRadius: 12,
         cursor: 'pointer',
-        overflow: 'hidden',
+        overflow: isActive ? 'hidden' : 'visible',
         flexShrink: 0,
         ...hideStyle,
       }}
