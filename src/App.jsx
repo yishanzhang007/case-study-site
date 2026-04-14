@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Dithering } from '@paper-design/shaders-react';
-import { Shader, Dither, GridDistortion, Plasma, WaveDistortion } from 'shaders/react';
+import { Shader, Dither, GridDistortion, Plasma } from 'shaders/react';
 
 const EASE = [0.23, 1, 0.32, 1];
 const DURATION = 0.25;
 
-function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, cardHeight, onMouseEnter, onClick }) {
+function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth, cardHeight, onMouseEnter, onClick }) {
   const ref = useRef(null);
   const [collapsed, setCollapsed] = useState(null);
-  const enterT = { duration: DURATION, ease: EASE };
-  const exitT = { duration: 0.15, ease: [0.4, 0, 1, 1] };
+  const t = { duration: DURATION, ease: EASE };
 
   // Measure collapsed size once on mount (before first paint)
   useLayoutEffect(() => {
@@ -19,6 +18,13 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
       setCollapsed({ w: r.width, h: r.height });
     }
   }, [isActive, collapsed]);
+
+  // Hide mode: medium uses visibility (keeps layout stable), small uses display:none
+  const hideStyle = isHidden
+    ? (breakpoint === 'small'
+      ? { display: 'none' }
+      : { visibility: 'hidden', pointerEvents: 'none' })
+    : {};
 
   return (
     <motion.div
@@ -31,8 +37,9 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
         padding: isActive ? '12px' : '10px 12px',
       }}
-      transition={isActive ? enterT : exitT}
+      transition={t}
       style={{
+        position: 'relative',
         background: 'rgba(255,255,255,0.2)',
         backdropFilter: 'blur(4px)',
         WebkitBackdropFilter: 'blur(4px)',
@@ -40,26 +47,14 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
         cursor: 'pointer',
         overflow: 'hidden',
         flexShrink: 0,
-        display: isHidden ? 'none' : undefined,
-        ...(isActive ? { display: 'flex', alignItems: 'center', justifyContent: 'center' } : {}),
+        ...hideStyle,
       }}
     >
-      {isActive && (
-        <img
-          src={src}
-          alt={label}
-          style={{
-            display: 'block',
-            maxWidth: '100%',
-            maxHeight: '100%',
-            objectFit: 'contain',
-          }}
-        />
-      )}
+      {/* Label — always in flow */}
       <motion.span
         initial={false}
         animate={{ opacity: isActive ? 0 : 1 }}
-        transition={isActive ? { duration: 0.05 } : { duration: 0.08, delay: 0.12 }}
+        transition={{ duration: isActive ? 0.05 : 0 }}
         style={{
           display: 'block',
           fontFamily: "'Tobias', serif",
@@ -72,6 +67,22 @@ function BottomNavButton({ label, src, isActive, isHidden, isSmall, cardWidth, c
       >
         {label}
       </motion.span>
+      {/* Card preview — absolutely positioned overlay */}
+      <motion.img
+        src={src}
+        alt={label}
+        initial={false}
+        animate={{ opacity: isActive ? 1 : 0 }}
+        transition={{ duration: isActive ? 0.2 : 0.1 }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          pointerEvents: 'none',
+        }}
+      />
     </motion.div>
   );
 }
@@ -143,14 +154,6 @@ export default function App() {
             intensity={1.6}
             speed={1}
             warp={0.52} />
-          <WaveDistortion
-            angle={6}
-            edges="mirror"
-            frequency={1.8}
-            speed={3.9}
-            strength={0.15}
-            transform={{ rotation: 0 }}
-            visible={true} />
         </Dither>
         <GridDistortion
           decay={5.3}
@@ -162,7 +165,7 @@ export default function App() {
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
         <div className="center-text" style={{ padding: '16px', borderRadius: 12 }}>
-          <div style={{ position: 'relative', zIndex: 1, mixBlendMode: 'multiply' }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
             {/* About */}
             <p style={{ color: '#D75606', marginBottom: 0 }}>About</p>
             <p>Hi, I'm Yishan. I used to be an architect, and I still judge things the same way I judged buildings: does it stand up, does it make sense to be in, does it work for real people?</p>
@@ -195,7 +198,7 @@ export default function App() {
                 src={src}
                 isActive={isActive}
                 isHidden={isHidden}
-                isSmall={breakpoint === 'small'}
+                breakpoint={breakpoint}
                 cardWidth={cardWidth}
                 cardHeight={cardHeight}
                 onMouseEnter={() => setHoveredBtn(key)}
