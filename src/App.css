@@ -73,7 +73,7 @@ body::after {
   color: var(--fg-primary); text-align: left;
   /* opacity + fade handled by Framer Motion to avoid breaking backdrop-filter */
   padding: 24px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 12px;
@@ -88,7 +88,7 @@ body::after {
   .center-text { animation: none; opacity: 1; }
 }
 
-@media (max-width: 479px) {
+@media (max-width: 519px) {
   .center-text-wrap {
     padding: 12px;
     padding-bottom: clamp(120px, 20vh, 200px);
@@ -115,7 +115,7 @@ body::after {
   align-items: flex-end;
 }
 
-@media (max-width: 479px) {
+@media (max-width: 519px) {
   .bottom-nav {
     flex-direction: column;
     gap: 4px;

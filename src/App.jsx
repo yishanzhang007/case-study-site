@@ -104,14 +104,14 @@ export default function App() {
   // Breakpoint detection
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
-    if (window.innerWidth < 480) return 'small';
+    if (window.innerWidth < 520) return 'small';
     if (window.innerWidth < 800) return 'medium';
     return 'wide';
   });
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setBreakpoint(w < 480 ? 'small' : w < 800 ? 'medium' : 'wide');
+      setBreakpoint(w < 520 ? 'small' : w < 800 ? 'medium' : 'wide');
     };
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
