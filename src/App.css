@@ -73,22 +73,12 @@ body::after {
   color: var(--fg-primary); text-align: left;
   opacity: 0; animation: centerTextEnter 280ms var(--ease-out-quint) 420ms forwards;
   padding: 24px;
-  border-radius: 12px;
-  max-height: 100%;
-  overflow-y: auto;
-  position: relative;
-}
-
-/* Background + blur on pseudo-element so overflow-y:auto doesn't break backdrop-filter */
-.center-text::before {
-  content: '';
-  position: absolute;
-  inset: 0;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 12px;
-  z-index: -1;
+  max-height: 100%;
+  position: relative;
 }
 
 @keyframes centerTextEnter { from { opacity: 0; } to { opacity: 1; } }
