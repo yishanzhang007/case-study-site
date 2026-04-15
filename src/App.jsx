@@ -127,17 +127,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
-  // Dismiss hover card on outside tap (mobile)
-  useEffect(() => {
-    if (breakpoint !== 'small' || !hoveredBtn) return;
-    const dismiss = (e) => {
-      const nav = document.querySelector('.bottom-nav');
-      if (nav && !nav.contains(e.target)) setHoveredBtn(null);
-    };
-    document.addEventListener('pointerdown', dismiss);
-    return () => document.removeEventListener('pointerdown', dismiss);
-  }, [breakpoint, hoveredBtn]);
-
   const NAV_BUTTONS = [
     { key: 'inbox', label: 'Front desk inbox', modal: 'inbox', src: '/assets/Inbox.svg' },
     { key: 'agent', label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg' },
@@ -206,8 +195,8 @@ export default function App() {
       >
           {NAV_BUTTONS.map(({ key, label, modal, src }) => {
             const isSmall = breakpoint === 'small';
-            const isActive = hoveredBtn === key;
-            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive;
+            const isActive = !isSmall && hoveredBtn === key;
+            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive && !isSmall;
             return (
               <BottomNavButton
                 key={key}
@@ -220,11 +209,7 @@ export default function App() {
                 cardHeight={cardHeight}
                 onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
                 onClick={() => {
-                  if (isSmall && !isActive) {
-                    setHoveredBtn(key);
-                  } else {
-                    setActiveCard(modal);
-                  }
+                  setActiveCard(modal);
                 }}
               />
             );

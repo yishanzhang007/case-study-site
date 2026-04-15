@@ -117,12 +117,13 @@ body::after {
 
 @media (max-width: 479px) {
   .bottom-nav {
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 4px;
     left: 12px;
     right: 12px;
     bottom: 24px;
     transform: none;
+    align-items: flex-start;
   }
 }
 
