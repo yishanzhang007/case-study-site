@@ -127,6 +127,17 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  // Dismiss hover card on outside tap (mobile)
+  useEffect(() => {
+    if (breakpoint !== 'small' || !hoveredBtn) return;
+    const dismiss = (e) => {
+      const nav = document.querySelector('.bottom-nav');
+      if (nav && !nav.contains(e.target)) setHoveredBtn(null);
+    };
+    document.addEventListener('pointerdown', dismiss);
+    return () => document.removeEventListener('pointerdown', dismiss);
+  }, [breakpoint, hoveredBtn]);
+
   const NAV_BUTTONS = [
     { key: 'inbox', label: 'Front desk inbox', modal: 'inbox', src: '/assets/Inbox.svg' },
     { key: 'agent', label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg' },
@@ -195,8 +206,8 @@ export default function App() {
       >
           {NAV_BUTTONS.map(({ key, label, modal, src }) => {
             const isSmall = breakpoint === 'small';
-            const isActive = !isSmall && hoveredBtn === key;
-            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive && !isSmall;
+            const isActive = hoveredBtn === key;
+            const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive;
             return (
               <BottomNavButton
                 key={key}
@@ -209,7 +220,11 @@ export default function App() {
                 cardHeight={cardHeight}
                 onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
                 onClick={() => {
-                  setActiveCard(modal);
+                  if (isSmall && !isActive) {
+                    setHoveredBtn(key);
+                  } else {
+                    setActiveCard(modal);
+                  }
                 }}
               />
             );
@@ -347,7 +362,7 @@ export default function App() {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'safe center',
+                      justifyContent: 'center',
                       pointerEvents: 'none',
                       paddingTop: 80,
                       paddingBottom: 80,
@@ -362,8 +377,9 @@ export default function App() {
                         alignItems: 'center',
                         flexWrap: 'wrap',
                         justifyContent: 'center',
-                        maxWidth: 'min(1325px, 100%)',
+                        maxWidth: '100%',
                         maxHeight: '100%',
+                        flexShrink: 0,
                       }}>
                         <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
                         <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
@@ -374,9 +390,10 @@ export default function App() {
                         backdropFilter: 'blur(8px)',
                         WebkitBackdropFilter: 'blur(8px)',
                         borderRadius: 12,
-                        maxWidth: 'min(1325px, 100%)',
+                        maxWidth: '100%',
                         display: 'flex',
                         overflow: 'hidden',
+                        flexShrink: 0,
                       }}>
                         <img
                           src={{ testcall: '/assets/test call full.svg', scheduling: '/assets/full settings.svg', true: '/assets/full inbox.svg' }[CARD_CONFIGS[activeCard].customModal] || '/assets/full inbox.svg'}

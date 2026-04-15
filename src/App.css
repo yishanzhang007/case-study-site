@@ -88,7 +88,7 @@ body::after {
   .center-text { animation: none; opacity: 1; }
 }
 
-@media (max-width: 549px) {
+@media (max-width: 479px) {
   .center-text-wrap {
     padding: 12px;
     padding-bottom: clamp(120px, 20vh, 200px);
@@ -115,15 +115,14 @@ body::after {
   align-items: flex-end;
 }
 
-@media (max-width: 549px) {
+@media (max-width: 479px) {
   .bottom-nav {
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 4px;
     left: 12px;
     right: 12px;
     bottom: 24px;
     transform: none;
-    align-items: flex-start;
   }
 }
 
