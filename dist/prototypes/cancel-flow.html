@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancel Appointment Flow — Prototypes</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f5f5f4; color: #1a1a1a; padding: 40px; }
+
+    h1 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 32px; }
+    h2 { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 16px; }
+
+    .prototypes { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+
+    .panel {
+      width: 380px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #999;
+    }
+
+    .panel-body { padding: 20px; }
+
+    /* Patient info */
+    .patient-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .patient-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #e8e6e3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 500; color: #666;
+    }
+    .patient-name { font-size: 15px; font-weight: 500; }
+    .patient-meta { font-size: 12px; color: #888; margin-top: 1px; }
+    .verified-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 500; color: #16a34a;
+      background: #f0fdf4; padding: 2px 6px; border-radius: 4px;
+      margin-left: 8px;
+    }
+
+    /* Call summary */
+    .summary {
+      font-size: 13px; line-height: 1.5; color: #555;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0ef;
+    }
+
+    /* Appointment card */
+    .appt-card {
+      background: #fafaf9;
+      border: 1px solid #e8e6e3;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .appt-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.03em; color: #999; margin-bottom: 8px;
+    }
+    .appt-detail {
+      font-size: 14px; font-weight: 500; margin-bottom: 2px;
+    }
+    .appt-sub {
+      font-size: 12px; color: #888;
+    }
+    .appt-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 500;
+      padding: 2px 8px; border-radius: 4px;
+      margin-top: 8px;
+    }
+    .status-pending { background: #fef3c7; color: #b45309; }
+    .status-cancelled { background: #fef2f2; color: #dc2626; }
+    .status-done { background: #f0fdf4; color: #16a34a; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      border: none; cursor: pointer;
+      transition: all 120ms ease;
+      gap: 6px;
+    }
+    .btn-primary { background: #1a1a1a; color: white; }
+    .btn-primary:hover { background: #333; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-ghost { background: none; color: #888; padding: 10px 12px; }
+    .btn-ghost:hover { color: #1a1a1a; }
+    .btn-outline { background: white; color: #1a1a1a; border: 1px solid #ddd; }
+    .btn-outline:hover { background: #fafafa; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-full { width: 100%; }
+
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+
+    /* Undo bar */
+    .undo-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #1a1a1a; color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .undo-bar button {
+      background: none; border: none; color: #93c5fd;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Inline confirm */
+    .inline-confirm {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px;
+      font-size: 13px; color: #666;
+    }
+
+    /* Checkbox actions */
+    .action-check {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0;
+      font-size: 13px;
+    }
+    .action-check + .action-check { border-top: 1px solid #f0f0ef; }
+    .action-check input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: #1a1a1a;
+    }
+    .action-label { font-weight: 500; }
+    .action-desc { color: #888; font-size: 12px; margin-top: 2px; }
+
+    /* States */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* Divider */
+    .divider { height: 1px; background: #f0f0ef; margin: 16px 0; }
+
+    /* Success animation */
+    @keyframes checkPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .check-icon {
+      animation: checkPop 300ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    .fade-in {
+      animation: fadeIn 200ms ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .label-tag {
+      position: absolute; top: -10px; right: 20px;
+      background: #1a1a1a; color: white;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>One-click cancel appointment — 3 prototypes</h1>
+
+<div class="prototypes">
+
+  <!-- ==================== PROTOTYPE A ==================== -->
+  <div>
+    <h2>A. Instant + Undo</h2>
+    <div class="panel" style="position:relative;">
+      <div class="panel-header">Side panel · Inbox item</div>
+      <div class="panel-body">
+        <div class="patient-row">
+          <div class="patient-avatar">SC</div>
+          <div>
+            <div class="patient-name">Sarah Chen <span class="verified-badge">&#10003; Verified</span></div>
+            <div class="patient-meta">DOB 03/15/1987 · Dr. Patel · Primary Care</div>
+          </div>
+        </div>
+        <div class="summary">
+          Patient called to cancel her upcoming appointment. Mentioned she'll call back to reschedule next week.
+        </div>
+
+        <!-- State 1: Pending -->
+        <div id="a-pending" class="state active">
+          <div class="appt-card">
+            <div class="appt-label">Requested cancellation</div>
+            <div class="appt-detail">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+            <div class="appt-status status-pending">&#9679; Pending staff confirmation</div>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="showA('processing')">
+            Confirm cancellation
+          </button>
+        </div>
+
+        <!-- State 2: Processing (brief) -->
+        <div id="a-processing" class="state">
+          <div class="appt-card" style="opacity:0.6;">
+            <div class="appt-label">Cancelling...</div>
+            <div class="appt-detail">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+          </div>
+        </div>
+
+        <!-- State 3: Done + Undo -->
+        <div id="a-done" class="state">
+          <div class="appt-card fade-in" style="border-color: #e5e7eb;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <span class="check-icon" style="color:#16a34a; font-size:16px;">&#10003;</span>
+              <span class="appt-label" style="margin:0; color:#16a34a;">Cancelled</span>
+            </div>
+            <div class="appt-detail" style="text-decoration: line-through; color: #aaa;">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+          </div>
+          <div class="undo-bar fade-in">
+            <span>Appointment cancelled</span>
+            <button onclick="showA('pending')">Undo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="max-width:380px; font-size:12px; color:#999; margin-top:12px; line-height:1.5;">
+      One click to cancel. Undo bar appears for 5 seconds as a safety net. No confirmation dialog — speed over caution. Best for high-volume clinics.
+    </p>
+  </div>
+
+  <!-- ==================== PROTOTYPE B ==================== -->
+  <div>
+    <h2>B. Inline confirm</h2>
+    <div class="panel">
+      <div class="panel-header">Side panel · Inbox item</div>
+      <div class="panel-body">
+        <div class="patient-row">
+          <div class="patient-avatar">SC</div>
+          <div>
+            <div class="patient-name">Sarah Chen <span class="verified-badge">&#10003; Verified</span></div>
+            <div class="patient-meta">DOB 03/15/1987 · Dr. Patel · Primary Care</div>
+          </div>
+        </div>
+        <div class="summary">
+          Patient called to cancel her upcoming appointment. Mentioned she'll call back to reschedule next week.
+        </div>
+
+        <!-- State 1: Pending -->
+        <div id="b-pending" class="state active">
+          <div class="appt-card">
+            <div class="appt-label">Requested cancellation</div>
+            <div class="appt-detail">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+            <div class="appt-status status-pending">&#9679; Pending staff confirmation</div>
+          </div>
+          <button class="btn btn-outline btn-full" onclick="showB('confirm')">
+            Cancel appointment
+          </button>
+        </div>
+
+        <!-- State 2: Confirm -->
+        <div id="b-confirm" class="state">
+          <div class="appt-card fade-in" style="border-color: #fbbf24;">
+            <div class="appt-label" style="color: #b45309;">Cancel this appointment?</div>
+            <div class="appt-detail">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+            <div class="btn-row" style="margin-top:12px;">
+              <button class="btn btn-danger btn-sm" onclick="showB('done')" style="flex:1;">Yes, cancel</button>
+              <button class="btn btn-ghost btn-sm" onclick="showB('pending')">Keep</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- State 3: Done -->
+        <div id="b-done" class="state">
+          <div class="appt-card fade-in" style="border-color: #e5e7eb;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <span class="check-icon" style="color:#16a34a; font-size:16px;">&#10003;</span>
+              <span class="appt-label" style="margin:0; color:#16a34a;">Cancelled</span>
+            </div>
+            <div class="appt-detail" style="text-decoration: line-through; color: #aaa;">Apr 15, 2026 · 10:30 AM</div>
+            <div class="appt-sub">Annual wellness visit · Dr. Patel</div>
+          </div>
+          <p style="font-size:12px; color:#888; margin-top:8px;">Cancellation synced to Athena. Patient will receive a confirmation text.</p>
+        </div>
+      </div>
+    </div>
+    <p style="max-width:380px; font-size:12px; color:#999; margin-top:12px; line-height:1.5;">
+      Two clicks but both are in the same spot. The card itself transforms into the confirmation — no modal, no context switch. Safer for clinics worried about accidental cancellations.
+    </p>
+  </div>
+
+  <!-- ==================== PROTOTYPE C ==================== -->
+  <div>
+    <h2>C. Batch actions</h2>
+    <div class="panel">
+      <div class="panel-header">Side panel · Inbox item</div>
+      <div class="panel-body">
+        <div class="patient-row">
+          <div class="patient-avatar">SC</div>
+          <div>
+            <div class="patient-name">Sarah Chen <span class="verified-badge">&#10003; Verified</span></div>
+            <div class="patient-meta">DOB 03/15/1987 · Dr. Patel · Primary Care</div>
+          </div>
+        </div>
+        <div class="summary">
+          Patient called to cancel her upcoming appointment. Asked to be notified of earlier openings for a reschedule. Also requested a prescription refill for lisinopril.
+        </div>
+
+        <!-- State 1: Pending -->
+        <div id="c-pending" class="state active">
+          <div style="font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.03em; color:#999; margin-bottom:8px;">
+            Recommended actions
+          </div>
+
+          <div class="action-check">
+            <input type="checkbox" checked id="c1">
+            <label for="c1">
+              <div class="action-label">Cancel appointment</div>
+              <div class="action-desc">Apr 15, 10:30 AM · Annual wellness · Dr. Patel</div>
+            </label>
+          </div>
+          <div class="action-check">
+            <input type="checkbox" checked id="c2">
+            <label for="c2">
+              <div class="action-label">Send cancellation confirmation</div>
+              <div class="action-desc">Text to (415) 555-0142</div>
+            </label>
+          </div>
+          <div class="action-check">
+            <input type="checkbox" checked id="c3">
+            <label for="c3">
+              <div class="action-label">Add to waitlist</div>
+              <div class="action-desc">Notify if earlier opening with Dr. Patel</div>
+            </label>
+          </div>
+          <div class="action-check">
+            <input type="checkbox" id="c4">
+            <label for="c4">
+              <div class="action-label">Route refill request to Dr. Patel</div>
+              <div class="action-desc">Lisinopril · needs provider approval</div>
+            </label>
+          </div>
+
+          <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="showC('done')">
+            Confirm 3 actions
+          </button>
+        </div>
+
+        <!-- State 2: Done -->
+        <div id="c-done" class="state">
+          <div style="font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.03em; color:#999; margin-bottom:12px;">
+            Completed
+          </div>
+
+          <div class="action-check fade-in" style="color: #16a34a;">
+            <span style="margin-top:2px;">&#10003;</span>
+            <div>
+              <div class="action-label">Appointment cancelled</div>
+              <div class="action-desc">Synced to Athena</div>
+            </div>
+          </div>
+          <div class="action-check fade-in" style="color: #16a34a; animation-delay: 50ms;">
+            <span style="margin-top:2px;">&#10003;</span>
+            <div>
+              <div class="action-label">Confirmation sent</div>
+              <div class="action-desc">Text to (415) 555-0142</div>
+            </div>
+          </div>
+          <div class="action-check fade-in" style="color: #16a34a; animation-delay: 100ms;">
+            <span style="margin-top:2px;">&#10003;</span>
+            <div>
+              <div class="action-label">Added to waitlist</div>
+              <div class="action-desc">Dr. Patel · earlier opening</div>
+            </div>
+          </div>
+          <div class="action-check fade-in" style="color: #999; animation-delay: 150ms;">
+            <span style="margin-top:2px;">&#9675;</span>
+            <div>
+              <div class="action-label" style="color:#999;">Refill request skipped</div>
+              <div class="action-desc">Not selected</div>
+            </div>
+          </div>
+
+          <div class="undo-bar fade-in" style="animation-delay: 200ms;">
+            <span>3 actions completed</span>
+            <button onclick="showC('pending')">Undo all</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="max-width:380px; font-size:12px; color:#999; margin-top:12px; line-height:1.5;">
+      AI pre-selects recommended actions from the call. Staff reviews, unchecks anything wrong, confirms all at once. Best when calls produce multiple follow-ups (cancel + notify + refill).
+    </p>
+  </div>
+
+</div>
+
+<script>
+  function showA(state) {
+    document.getElementById('a-pending').classList.remove('active');
+    document.getElementById('a-processing').classList.remove('active');
+    document.getElementById('a-done').classList.remove('active');
+    if (state === 'processing') {
+      document.getElementById('a-processing').classList.add('active');
+      setTimeout(() => showA('done'), 600);
+    } else {
+      document.getElementById('a-' + state).classList.add('active');
+    }
+  }
+
+  function showB(state) {
+    document.getElementById('b-pending').classList.remove('active');
+    document.getElementById('b-confirm').classList.remove('active');
+    document.getElementById('b-done').classList.remove('active');
+    document.getElementById('b-' + state).classList.add('active');
+  }
+
+  function showC(state) {
+    document.getElementById('c-pending').classList.remove('active');
+    document.getElementById('c-done').classList.remove('active');
+    document.getElementById('c-' + state).classList.add('active');
+  }
+</script>
+
+</body>
+</html>

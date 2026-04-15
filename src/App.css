@@ -148,5 +148,5 @@ body::after {
   .modal-title { font-size: 11px !important; }
 }
 
-/* SVG positioning handled by inline style: justifyContent: 'safe center'
-   — centers when SVG fits, falls back to flex-start when it overflows */
+/* SVG positioning: content divs use margin:auto 0 for safe centering
+   — centers when SVG fits, pins to top when it overflows (bottom clipped) */

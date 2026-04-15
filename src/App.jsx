@@ -362,7 +362,6 @@ export default function App() {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
                       pointerEvents: 'none',
                       paddingTop: 80,
                       paddingBottom: 80,
@@ -380,6 +379,7 @@ export default function App() {
                         maxWidth: '100%',
                         maxHeight: '100%',
                         flexShrink: 0,
+                        margin: 'auto 0',
                       }}>
                         <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
                         <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 0.85, borderRadius: 12, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', background: 'transparent' }} />
@@ -394,6 +394,7 @@ export default function App() {
                         display: 'flex',
                         overflow: 'hidden',
                         flexShrink: 0,
+                        margin: 'auto 0',
                       }}>
                         <img
                           src={{ testcall: '/assets/test call full.svg', scheduling: '/assets/full settings.svg', true: '/assets/full inbox.svg' }[CARD_CONFIGS[activeCard].customModal] || '/assets/full inbox.svg'}
