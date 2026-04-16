@@ -35,12 +35,12 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
       animate={{
         width: isActive ? cardWidth : (collapsed?.w || 'auto'),
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
-        padding: isActive ? '12px' : '10px 12px',
+        padding: isActive ? '0px' : '8px 12px',
+        backgroundColor: isActive ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.9)',
       }}
       transition={t}
       style={{
         position: 'relative',
-        background: 'rgba(255,255,255,0.9)',
         borderRadius: 0,
         cursor: 'pointer',
         overflow: isActive ? 'hidden' : 'visible',
@@ -115,10 +115,6 @@ export default function App() {
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  // Card dimensions per breakpoint
-  const cardWidth = breakpoint === 'small' ? (typeof window !== 'undefined' ? window.innerWidth - 24 : 426) : 426;
-  const cardHeight = 240;
-
   // Close on Escape
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') setActiveCard(null); };
@@ -127,10 +123,10 @@ export default function App() {
   }, []);
 
   const NAV_BUTTONS = [
-    { key: 'inbox', label: 'Front desk inbox', modal: 'inbox', src: '/assets/Inbox.svg' },
-    { key: 'agent', label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg' },
-    { key: 'onboarding', label: 'Onboarding', modal: 'onboarding', src: '/assets/Onboarding.svg' },
-    { key: 'routing', label: 'Routing', modal: 'scheduling', src: '/assets/routing.svg' },
+    { key: 'inbox', label: 'Front desk inbox', modal: 'inbox', src: '/assets/Inbox.svg', cardW: 438, cardH: 228 },
+    { key: 'agent', label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 226 },
+    { key: 'onboarding', label: 'Onboarding', modal: 'onboarding', src: '/assets/Onboarding.svg', cardW: 436, cardH: 231 },
+    { key: 'routing', label: 'Routing', modal: 'scheduling', src: '/assets/routing.svg', cardW: 438, cardH: 220 },
   ];
 
   return (
@@ -149,7 +145,7 @@ export default function App() {
             colorA="#ffffff"
             contrast={0.9}
             density={0.3}
-            intensity={1.6}
+            intensity={1}
             speed={1}
             warp={0.52} />
         </Dither>
@@ -192,7 +188,7 @@ export default function App() {
         className="bottom-nav"
         onMouseLeave={() => setHoveredBtn(null)}
       >
-          {NAV_BUTTONS.map(({ key, label, modal, src }) => {
+          {NAV_BUTTONS.map(({ key, label, modal, src, cardW, cardH }) => {
             const isSmall = breakpoint === 'small';
             const isActive = !isSmall && hoveredBtn === key;
             const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive && !isSmall;
@@ -204,8 +200,8 @@ export default function App() {
                 isActive={isActive}
                 isHidden={isHidden}
                 breakpoint={breakpoint}
-                cardWidth={cardWidth}
-                cardHeight={cardHeight}
+                cardWidth={cardW}
+                cardHeight={cardH}
                 onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
                 onClick={() => {
                   setActiveCard(modal);
