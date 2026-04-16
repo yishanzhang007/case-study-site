@@ -40,10 +40,8 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
       transition={t}
       style={{
         position: 'relative',
-        background: 'rgba(255,255,255,0.2)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
-        borderRadius: 12,
+        background: 'rgba(255,255,255,0.9)',
+        borderRadius: 0,
         cursor: 'pointer',
         overflow: isActive ? 'hidden' : 'visible',
         flexShrink: 0,
@@ -59,7 +57,8 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
           display: 'block',
           fontFamily: "'Tobias', serif",
           fontWeight: 300,
-          fontSize: 14,
+          fontSize: 15,
+          lineHeight: '22px',
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
         }}
@@ -168,7 +167,7 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.28, delay: 0.42, ease: [0.23, 1, 0.32, 1] }}
-          style={{ padding: '16px', borderRadius: 12 }}
+          style={{ padding: '16px', borderRadius: 0 }}
         >
           <div style={{ position: 'relative', zIndex: 1, maxHeight: '100%', overflowY: 'auto' }}>
             {/* About */}
@@ -325,14 +324,13 @@ export default function App() {
                       top: 12,
                       left: 12,
                       zIndex: 10,
-                      background: 'rgba(255,255,255,0.2)',
-                      backdropFilter: 'blur(4px)',
-                      WebkitBackdropFilter: 'blur(4px)',
+                      background: 'rgba(255,255,255,0.9)',
                       padding: '8px 12px',
-                      borderRadius: 8,
+                      borderRadius: 0,
                       fontFamily: "'Tobias', serif",
                       fontWeight: 300,
-                      fontSize: 14,
+                      fontSize: 15,
+                      lineHeight: '22px',
                       letterSpacing: '-0.01em',
                       textTransform: 'none',
                       color: 'var(--fg-primary)',
