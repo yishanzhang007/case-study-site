@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ShaderBackground = lazy(() => import('./ShaderBackground'));
 const Modal = lazy(() => import('./Modal'));
@@ -117,6 +117,16 @@ export default function App() {
   const [originRect, setOriginRect] = useState(null);
   const [hoveredBtn, setHoveredBtn] = useState(null);
 
+  // Loading screen: wait for shader + minimum display time
+  const [shaderReady, setShaderReady] = useState(false);
+  const [minTimePassed, setMinTimePassed] = useState(false);
+  const siteReady = shaderReady && minTimePassed;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinTimePassed(true), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
     if (window.innerWidth < 480) return 'small';
@@ -145,18 +155,44 @@ export default function App() {
 
   return (
     <>
+      {/* ====== LOADING SCREEN ====== */}
+      <AnimatePresence>
+        {!siteReady && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: EASE }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 50,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#ffffff',
+              fontFamily: "'Tobias', serif",
+              fontWeight: 300,
+              fontSize: 15,
+              lineHeight: '22px',
+              letterSpacing: '-0.01em',
+              color: 'var(--fg-primary)',
+            }}
+          >
+            Hi, nice to meet you.
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ====== SHADER BACKGROUND (lazy) ====== */}
       <Suspense fallback={null}>
-        <ShaderBackground />
+        <ShaderBackground onReady={() => setShaderReady(true)} />
       </Suspense>
 
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
-        <motion.div
+        <div
           className="center-text"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.28, delay: 0.42, ease: EASE }}
           style={{ padding: '16px', borderRadius: 12 }}
         >
           <div style={{ position: 'relative', zIndex: 1, maxHeight: '100%', overflowY: 'auto' }}>
@@ -171,7 +207,7 @@ export default function App() {
             <p style={{ color: '#D75606', marginTop: 16, marginBottom: 0 }}>Connect</p>
             <p><a href="mailto:yishan.zhang007@gmail.com" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>Say hi</a>, or find me <a href="https://www.linkedin.com/in/yishanzhang/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>here</a>.</p>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* ====== BOTTOM NAV BUTTONS ====== */}

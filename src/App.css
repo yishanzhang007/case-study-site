@@ -62,8 +62,6 @@ body::after {
   position: relative;
 }
 
-@keyframes centerTextEnter { from { opacity: 0; } to { opacity: 1; } }
-@keyframes shaderFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .center-text { animation: none; opacity: 1; }
