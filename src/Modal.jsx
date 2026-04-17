@@ -1,0 +1,179 @@
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Dithering } from '@paper-design/shaders-react';
+
+const MODAL_STYLE = {
+  testcall:   { title: 'Agent playground', speed: 1.78, shape: 'ripple', type: '2x2',    size: 2.5, scale: 0.62, bg: '#99CDFC', fg: '#E2ECF6', src: '/assets/test call full.svg', opacity: 1 },
+  onboarding: { title: 'Onboarding',        speed: 1.0,  shape: 'dots',   type: 'random', size: 7.3, scale: 1.4,  bg: '#D8E8D6', fg: '#AFCEAA' },
+  scheduling: { title: 'Routing',           speed: 1.56, shape: 'swirl',  type: '8x8',    size: 2.0, scale: 1.0,  bg: '#DDDDDD', fg: '#D67DA9', src: '/assets/full settings.svg', opacity: 1 },
+  true:       { title: 'Front desk inbox',  speed: 1.13, shape: 'warp',   type: '4x4',    size: 2.4, scale: 0.88, bg: '#F6F5FF', fg: '#DDD9FC', src: '/assets/full inbox.svg',    opacity: 0.85 },
+};
+
+const EASE = [0.23, 1, 0.32, 1];
+
+export default function Modal({ activeCard, cardConfigs, originRect, onClose, onExitComplete }) {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <AnimatePresence onExitComplete={onExitComplete}>
+      {activeCard && cardConfigs[activeCard] && cardConfigs[activeCard].customModal && (() => {
+        const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
+        return (
+          <motion.div
+            className="card-modal-backdrop"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {(() => {
+              const VW = window.innerWidth;
+              const VH = window.innerHeight;
+              const MW = VW - 32;
+              const MH = VH - 32;
+              const initialFrame = originRect ? {
+                scaleX: originRect.width / MW,
+                scaleY: originRect.height / MH,
+                x: (originRect.x + originRect.width / 2) - (16 + MW / 2),
+                y: (originRect.y + originRect.height / 2) - (16 + MH / 2),
+              } : null;
+
+              const morphTransition = { duration: 0.42, ease: EASE };
+              const exitTransition = { duration: 0.6, ease: EASE };
+
+              return (
+                <motion.div
+                  className="card-modal-content"
+                  style={{
+                    position: 'fixed',
+                    top: 16,
+                    left: 16,
+                    width: 'calc(100vw - 32px)',
+                    height: 'calc(100vh - 32px)',
+                    borderRadius: cardConfigs[activeCard].radius,
+                    overflow: 'hidden',
+                    transformOrigin: 'center center',
+                    willChange: 'transform, opacity',
+                  }}
+                  initial={shouldReduceMotion || !initialFrame ? { opacity: 0 } : { ...initialFrame, opacity: 1 }}
+                  animate={shouldReduceMotion ? { opacity: 1 } : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1 }}
+                  exit={
+                    shouldReduceMotion || !initialFrame
+                      ? { opacity: 0, transition: { duration: 0.18 } }
+                      : { ...initialFrame, opacity: 1, transition: exitTransition }
+                  }
+                  transition={morphTransition}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Dithering
+                    speed={m.speed}
+                    shape={m.shape}
+                    type={m.type}
+                    size={m.size}
+                    scale={m.scale}
+                    frame={364922.340999608}
+                    colorBack="#00000000"
+                    colorFront={m.fg}
+                    style={{ backgroundColor: m.bg, width: '100%', height: '100%' }}
+                  />
+                  <motion.div
+                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
+                    animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
+                    exit={{ opacity: 0, transition: { duration: 0.22 } }}
+                    style={{ position: 'absolute', inset: 0 }}
+                  >
+                    <button
+                      onClick={onClose}
+                      style={{
+                        position: 'absolute', top: 12, right: 12, zIndex: 11,
+                        width: 24, height: 24, borderRadius: '50%',
+                        background: 'none', border: 'none',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, color: 'var(--fg-muted)', lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                    <div className="modal-title" style={{
+                      position: 'absolute',
+                      top: 12,
+                      left: 12,
+                      zIndex: 10,
+                      background: 'rgba(255,255,255,0.6)',
+                      padding: '6px 10px',
+                      borderRadius: 8,
+                      fontFamily: "'Tobias', serif",
+                      fontWeight: 300,
+                      fontSize: 14,
+                      lineHeight: '20px',
+                      letterSpacing: '-0.01em',
+                      textTransform: 'none',
+                      color: 'var(--fg-primary)',
+                      pointerEvents: 'none',
+                    }}>
+                      {m.title}
+                    </div>
+                    <div className="fullscreen-modal-svg-overlay" style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      pointerEvents: 'none',
+                      paddingTop: 80,
+                      paddingBottom: 80,
+                      paddingLeft: 'clamp(16px, 3vw, 40px)',
+                      paddingRight: 'clamp(16px, 3vw, 40px)',
+                      overflow: 'hidden',
+                    }}>
+                      <div style={{ flex: '1 0 0px' }} />
+                      {cardConfigs[activeCard].customModal === 'onboarding' ? (
+                        <div style={{
+                          display: 'flex',
+                          gap: 80,
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          justifyContent: 'center',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          flexShrink: 0,
+                        }}>
+                          <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 12, background: 'transparent' }} />
+                          <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 12, background: 'transparent' }} />
+                        </div>
+                      ) : (
+                        <div style={{
+                          background: 'rgba(255,255,255,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)',
+                          borderRadius: 12,
+                          maxWidth: '100%',
+                          display: 'flex',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                        }}>
+                          <img
+                            src={m.src}
+                            alt=""
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                              display: 'block',
+                              opacity: m.opacity,
+                              borderRadius: 12,
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div style={{ flex: '1 0 0px' }} />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              );
+            })()}
+          </motion.div>
+        );
+      })()}
+    </AnimatePresence>
+  );
+}
