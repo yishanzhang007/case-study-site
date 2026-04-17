@@ -1,5 +1,6 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Dithering } from '@paper-design/shaders-react';
+import { Shader, Dither, GridDistortion, Plasma } from 'shaders/react';
 
 const MODAL_STYLE = {
   testcall:   { title: 'Agent playground', speed: 1.78, shape: 'ripple', type: '2x2',    size: 2.5, scale: 0.62, bg: '#99CDFC', fg: '#E2ECF6', src: '/assets/test call full.svg', opacity: 1 },
@@ -65,17 +66,95 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                   transition={morphTransition}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <Dithering
-                    speed={m.speed}
-                    shape={m.shape}
-                    type={m.type}
-                    size={m.size}
-                    scale={m.scale}
-                    frame={364922.340999608}
-                    colorBack="#00000000"
-                    colorFront={m.fg}
-                    style={{ backgroundColor: m.bg, width: '100%', height: '100%' }}
-                  />
+                  {cardConfigs[activeCard].customModal === true ? (
+                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#F6F5FF' }}>
+                      <Dither
+                        colorA="#F6F5FF"
+                        colorB="#C8C3EC"
+                        pattern="bayer8"
+                        pixelSize={3}
+                        spread={0.99}
+                        threshold={0.43}
+                        transform={{ scale: 1.33 }}>
+                        <Plasma
+                          colorA="#ffffff"
+                          contrast={0.9}
+                          density={0.3}
+                          intensity={1.2}
+                          speed={1}
+                          warp={0.52} />
+                      </Dither>
+                    </Shader>
+                  ) : cardConfigs[activeCard].customModal === 'onboarding' ? (
+                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#D8E8D6' }}>
+                      <Dither
+                        colorA="#D8E8D6"
+                        colorB="#AFCEAA"
+                        pattern="bayer8"
+                        pixelSize={3}
+                        spread={0.99}
+                        threshold={0.43}
+                        transform={{ scale: 1.33 }}>
+                        <Plasma
+                          colorA="#ffffff"
+                          contrast={0.9}
+                          density={0.3}
+                          intensity={1.2}
+                          speed={1}
+                          warp={0.52} />
+                      </Dither>
+                    </Shader>
+                  ) : cardConfigs[activeCard].customModal === 'testcall' ? (
+                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#E2ECF6' }}>
+                      <Dither
+                        colorA="#E2ECF6"
+                        colorB="#99CDFC"
+                        pattern="bayer8"
+                        pixelSize={3}
+                        spread={0.99}
+                        threshold={0.43}
+                        transform={{ scale: 1.33 }}>
+                        <Plasma
+                          colorA="#ffffff"
+                          contrast={0.9}
+                          density={0.3}
+                          intensity={1.2}
+                          speed={1}
+                          warp={0.52} />
+                      </Dither>
+                    </Shader>
+                  ) : cardConfigs[activeCard].customModal === 'scheduling' ? (
+                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#DDDDDD' }}>
+                      <Dither
+                        colorA="#DDDDDD"
+                        colorB="#D67DA9"
+                        pattern="bayer8"
+                        pixelSize={3}
+                        spread={0.99}
+                        threshold={0.43}
+                        transform={{ scale: 1.33 }}>
+                        <Plasma
+                          colorA="#ffffff"
+                          contrast={0.9}
+                          density={0.3}
+                          intensity={1.2}
+                          speed={1}
+                          warp={0.52} />
+                      </Dither>
+                    </Shader>
+                  ) : (
+                    <Dithering
+                      speed={m.speed}
+                      shape={m.shape}
+                      type={m.type}
+                      size={m.size}
+                      scale={m.scale}
+                      frame={364922.340999608}
+                      colorBack="#00000000"
+                      colorFront={m.fg}
+                      style={{ backgroundColor: m.bg, width: '100%', height: '100%' }}
+                    />
+                  )}
                   <motion.div
                     initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
                     animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
