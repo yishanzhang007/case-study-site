@@ -58,10 +58,9 @@ body::after {
 
 /* ============ CENTER TEXT ============ */
 .center-text-wrap {
-  position: fixed; inset: 0;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 62px;
   display: flex; align-items: center; justify-content: center;
   z-index: 10; pointer-events: none; padding: 16px;
-  padding-bottom: clamp(120px, 20vh, 200px);
 }
 
 .center-text {
@@ -71,9 +70,9 @@ body::after {
   font-weight: 300;
   font-size: 15px; line-height: 22px; letter-spacing: -0.01em;
   color: var(--fg-primary); text-align: left;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 12px;
   max-height: 100%;
   position: relative;
 }
@@ -88,7 +87,7 @@ body::after {
 @media (max-width: 479px) {
   .center-text-wrap {
     padding: 12px;
-    padding-bottom: clamp(120px, 20vh, 200px);
+    bottom: 188px;
   }
 }
 
@@ -140,10 +139,6 @@ body::after {
 .card-modal-content {
   cursor: default;
   will-change: transform;
-}
-
-@media (max-width: 1200px) {
-  .modal-title { font-size: 11px !important; }
 }
 
 /* SVG positioning: content divs use margin:auto 0 for safe centering

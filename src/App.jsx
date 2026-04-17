@@ -11,11 +11,18 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
   const [collapsed, setCollapsed] = useState(null);
   const t = { duration: DURATION, ease: EASE };
 
-  // Measure collapsed size once on mount (before first paint)
+  // Measure collapsed size after fonts load (Tobias is wider than fallback)
   useLayoutEffect(() => {
-    if (ref.current && !isActive && !collapsed) {
+    if (!ref.current || isActive || collapsed) return;
+    const measure = () => {
+      if (!ref.current) return;
       const r = ref.current.getBoundingClientRect();
       setCollapsed({ w: r.width, h: r.height });
+    };
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(measure);
+    } else {
+      measure();
     }
   }, [isActive, collapsed]);
 
@@ -36,12 +43,12 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
         width: isActive ? cardWidth : (collapsed?.w || 'auto'),
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
         padding: isActive ? '0px' : '8px 12px',
-        backgroundColor: isActive ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.9)',
+        backgroundColor: isActive ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,1)',
       }}
       transition={t}
       style={{
         position: 'relative',
-        borderRadius: 0,
+        borderRadius: 12,
         cursor: 'pointer',
         overflow: isActive ? 'hidden' : 'visible',
         flexShrink: 0,
@@ -122,6 +129,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  const CARD_SCALE = 0.75;
   const NAV_BUTTONS = [
     { key: 'inbox', label: 'Front desk inbox', modal: 'inbox', src: '/assets/Inbox.svg', cardW: 438, cardH: 228 },
     { key: 'agent', label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 226 },
@@ -145,7 +153,7 @@ export default function App() {
             colorA="#ffffff"
             contrast={0.9}
             density={0.3}
-            intensity={1}
+            intensity={0.8}
             speed={1}
             warp={0.52} />
         </Dither>
@@ -163,7 +171,7 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.28, delay: 0.42, ease: [0.23, 1, 0.32, 1] }}
-          style={{ padding: '16px', borderRadius: 0 }}
+          style={{ padding: '12px', borderRadius: 12 }}
         >
           <div style={{ position: 'relative', zIndex: 1, maxHeight: '100%', overflowY: 'auto' }}>
             {/* About */}
@@ -200,8 +208,8 @@ export default function App() {
                 isActive={isActive}
                 isHidden={isHidden}
                 breakpoint={breakpoint}
-                cardWidth={cardW}
-                cardHeight={cardH}
+                cardWidth={cardW * CARD_SCALE}
+                cardHeight={cardH * CARD_SCALE}
                 onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
                 onClick={() => {
                   setActiveCard(modal);
@@ -320,9 +328,9 @@ export default function App() {
                       top: 12,
                       left: 12,
                       zIndex: 10,
-                      background: 'rgba(255,255,255,0.9)',
+                      background: 'rgba(255,255,255,1)',
                       padding: '8px 12px',
-                      borderRadius: 0,
+                      borderRadius: 12,
                       fontFamily: "'Tobias', serif",
                       fontWeight: 300,
                       fontSize: 15,
