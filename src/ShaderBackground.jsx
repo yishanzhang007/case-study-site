@@ -21,6 +21,7 @@ export default function ShaderBackground({ onReady }) {
   }, []);
 
   useEffect(() => {
+    if (!isFinite(SHADER_DURATION)) return; // never freeze
     const timer = setTimeout(() => {
       const canvas = containerRef.current?.querySelector('canvas');
       if (canvas) {
