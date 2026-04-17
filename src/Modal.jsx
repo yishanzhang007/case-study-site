@@ -30,13 +30,13 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
             {(() => {
               const VW = window.innerWidth;
               const VH = window.innerHeight;
-              const MW = VW - 32;
-              const MH = VH - 32;
+              const MW = VW - 24;
+              const MH = VH - 24;
               const initialFrame = originRect ? {
                 scaleX: originRect.width / MW,
                 scaleY: originRect.height / MH,
-                x: (originRect.x + originRect.width / 2) - (16 + MW / 2),
-                y: (originRect.y + originRect.height / 2) - (16 + MH / 2),
+                x: (originRect.x + originRect.width / 2) - (12 + MW / 2),
+                y: (originRect.y + originRect.height / 2) - (12 + MH / 2),
               } : null;
 
               const morphTransition = { duration: 0.42, ease: EASE };
@@ -47,10 +47,10 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                   className="card-modal-content"
                   style={{
                     position: 'fixed',
-                    top: 16,
-                    left: 16,
-                    width: 'calc(100vw - 32px)',
-                    height: 'calc(100vh - 32px)',
+                    top: 12,
+                    left: 12,
+                    width: 'calc(100vw - 24px)',
+                    height: 'calc(100dvh - 24px)',
                     borderRadius: cardConfigs[activeCard].radius,
                     overflow: 'hidden',
                     transformOrigin: 'center center',

@@ -195,7 +195,7 @@ export default function App() {
           className="center-text"
           style={{ padding: '16px', borderRadius: 12 }}
         >
-          <div style={{ position: 'relative', zIndex: 1, maxHeight: '100%', overflowY: 'auto' }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
             <p style={{ color: '#D75606', marginBottom: 0 }}>About</p>
             <p>Hi, I'm Yishan. I used to be an architect, and I still judge things the same way I judged buildings: does it stand up, does it make sense to be in, does it work for real people?</p>
             <p style={{ marginTop: 10 }}>That's probably why I can't pick one role — research, design, code, leading teams. A great product is beyond design, and I care deeply about every aspect of it.</p>
