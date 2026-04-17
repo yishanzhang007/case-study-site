@@ -100,6 +100,8 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                       left: 12,
                       zIndex: 10,
                       background: 'rgba(255,255,255,0.6)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                      backdropFilter: 'blur(4px)',
                       padding: '6px 10px',
                       borderRadius: 8,
                       fontFamily: "'Tobias', serif",
