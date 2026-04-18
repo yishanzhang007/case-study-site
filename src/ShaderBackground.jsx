@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { Shader, Dither, GridDistortion, Plasma } from 'shaders/react';
 
-const SHADER_DURATION = Infinity; // disabled — shader runs forever (testing)
+const SHADER_DURATION = 15000; // ms of live animation before freezing to save GPU
 
 const shaderStyle = {
   position: 'fixed',

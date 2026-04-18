@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@paper-design/shaders-react':
-        specifier: ^0.0.72
-        version: 0.0.72(react@19.2.5)
       framer-motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -53,18 +50,6 @@ packages:
 
   '@oxc-project/types@0.124.0':
     resolution: {integrity: sha512-VBFWMTBvHxS11Z5Lvlr3IWgrwhMTXV+Md+EQF0Xf60+wAdsGFTBx7X7K/hP4pi8N7dcm1RvcHwDxZ16Qx8keUg==}
-
-  '@paper-design/shaders-react@0.0.72':
-    resolution: {integrity: sha512-q6KwquL93ZVNcuSM7pqzW0z/VLjnDVb/NSpYyGJBxf7MEHHCXx37E+zw/Px6RZLt3SGCUerIDDCGCMT385oW0w==}
-    peerDependencies:
-      '@types/react': ^18 || ^19
-      react: ^18 || ^19
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
-  '@paper-design/shaders@0.0.72':
-    resolution: {integrity: sha512-rk2BFuV5ood2DaivbxJC2jQMzaB434isDUzdUQ85Cy0OWnUMuxl8kyGMR74TDPyjo3EvcHIyreNLkJdRG+GfSA==}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.15':
     resolution: {integrity: sha512-YYe6aWruPZDtHNpwu7+qAHEMbQ/yRl6atqb/AhznLTnD3UY99Q1jE7ihLSahNWkF4EqRPVC4SiR4O0UkLK02tA==}
@@ -495,13 +480,6 @@ snapshots:
     optional: true
 
   '@oxc-project/types@0.124.0': {}
-
-  '@paper-design/shaders-react@0.0.72(react@19.2.5)':
-    dependencies:
-      '@paper-design/shaders': 0.0.72
-      react: 19.2.5
-
-  '@paper-design/shaders@0.0.72': {}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.15':
     optional: true

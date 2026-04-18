@@ -1,12 +1,11 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Dithering } from '@paper-design/shaders-react';
-import { Shader, Dither, GridDistortion, Plasma } from 'shaders/react';
+import { Shader, Dither, Plasma } from 'shaders/react';
 
 const MODAL_STYLE = {
-  testcall:   { title: 'Agent playground', speed: 1.78, shape: 'ripple', type: '2x2',    size: 2.5, scale: 0.62, bg: '#99CDFC', fg: '#E2ECF6', src: '/assets/test call full.svg', opacity: 1 },
-  onboarding: { title: 'Onboarding',        speed: 1.0,  shape: 'dots',   type: 'random', size: 7.3, scale: 1.4,  bg: '#D8E8D6', fg: '#AFCEAA' },
-  scheduling: { title: 'Routing',           speed: 1.56, shape: 'swirl',  type: '8x8',    size: 2.0, scale: 1.0,  bg: '#DDDDDD', fg: '#D67DA9', src: '/assets/full settings.svg', opacity: 1 },
-  true:       { title: 'Front desk inbox',  speed: 1.13, shape: 'warp',   type: '4x4',    size: 2.4, scale: 0.88, bg: '#F6F5FF', fg: '#DDD9FC', src: '/assets/full inbox.svg',    opacity: 0.85 },
+  testcall:   { title: 'Agent playground', src: '/assets/test call full.svg', opacity: 1 },
+  onboarding: { title: 'Onboarding' },
+  scheduling: { title: 'Routing',          src: '/assets/full settings.svg',  opacity: 1 },
+  true:       { title: 'Front desk inbox', src: '/assets/full inbox.svg',     opacity: 0.85 },
 };
 
 const EASE = [0.23, 1, 0.32, 1];
@@ -142,19 +141,7 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                           warp={0.52} />
                       </Dither>
                     </Shader>
-                  ) : (
-                    <Dithering
-                      speed={m.speed}
-                      shape={m.shape}
-                      type={m.type}
-                      size={m.size}
-                      scale={m.scale}
-                      frame={364922.340999608}
-                      colorBack="#00000000"
-                      colorFront={m.fg}
-                      style={{ backgroundColor: m.bg, width: '100%', height: '100%' }}
-                    />
-                  )}
+                  ) : null}
                   <motion.div
                     initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
                     animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
