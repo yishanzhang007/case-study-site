@@ -179,7 +179,7 @@ export default function App() {
               color: 'var(--fg-primary)',
             }}
           >
-            Hi, nice to meet you.
+            <span style={{ color: '#D75606' }}>Hi,</span> nice to meet you.
           </motion.div>
         )}
       </AnimatePresence>
