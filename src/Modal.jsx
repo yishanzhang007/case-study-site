@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import DitherShader from './DitherShader';
 
@@ -47,8 +48,35 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
 
               const morphTransition = { duration: 0.42, ease: EASE };
               const exitTransition = { duration: 0.6, ease: EASE };
+              const c = MODAL_COLORS[cardConfigs[activeCard].customModal] || MODAL_COLORS.true;
 
               return (
+                <ModalContent
+                  activeCard={activeCard}
+                  cardConfigs={cardConfigs}
+                  initialFrame={initialFrame}
+                  morphTransition={morphTransition}
+                  exitTransition={exitTransition}
+                  shouldReduceMotion={shouldReduceMotion}
+                  colorBg={c.bg}
+                  colorDot={c.dot}
+                  onClose={onClose}
+                />
+              );
+            })()}
+          </motion.div>
+        );
+      })()}
+    </AnimatePresence>
+  );
+}
+
+function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, exitTransition, shouldReduceMotion, colorBg, colorDot, onClose }) {
+  const [shaderReady, setShaderReady] = useState(false);
+  const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
+
+  return (
+    <>
                 <motion.div
                   className="card-modal-content"
                   style={{
@@ -70,20 +98,27 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                       : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
                   }
                   transition={morphTransition}
+                  onAnimationComplete={(def) => {
+                    if (def && def.scaleX === 1) setShaderReady(true);
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {(() => {
-                    const c = MODAL_COLORS[cardConfigs[activeCard].customModal] || MODAL_COLORS.true;
-                    return (
-                      <div style={{ position: 'absolute', inset: 0, backgroundColor: c.bg }}>
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: colorBg }}>
+                    {shaderReady && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        style={{ position: 'absolute', inset: 0 }}
+                      >
                         <DitherShader
-                          colorA={c.bg}
-                          colorB={c.dot}
+                          colorA={colorBg}
+                          colorB={colorDot}
                           style={{ position: 'absolute', zIndex: 0 }}
                         />
-                      </div>
-                    );
-                  })()}
+                      </motion.div>
+                    )}
+                  </div>
                   <motion.div
                     initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
                     animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
@@ -176,11 +211,6 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                     </div>
                   </motion.div>
                 </motion.div>
-              );
-            })()}
-          </motion.div>
-        );
-      })()}
-    </AnimatePresence>
+    </>
   );
 }

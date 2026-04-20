@@ -1,8 +1,7 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import DitherShader from './DitherShader';
-
-const Modal = lazy(() => import('./Modal'));
+import Modal from './Modal';
 
 const EASE = [0.23, 1, 0.32, 1];
 const DURATION = 0.25;
@@ -17,14 +16,15 @@ const CARD_CONFIGS = {
 };
 
 const NAV_BUTTONS = [
-  { key: 'inbox',      label: 'Front desk inbox', modal: 'inbox',      src: '/assets/Inbox.svg',            cardW: 438, cardH: 228 },
-  { key: 'agent',      label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 226 },
-  { key: 'onboarding', label: 'Onboarding',       modal: 'onboarding', src: '/assets/Onboarding.svg',       cardW: 436, cardH: 231 },
-  { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 220 },
+  { key: 'inbox',      label: 'Front desk inbox', modal: 'inbox',      src: '/assets/Inbox.svg',            cardW: 438, cardH: 228, prefetch: ['/assets/full inbox.svg'] },
+  { key: 'agent',      label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 226, prefetch: ['/assets/test call full.svg'] },
+  { key: 'onboarding', label: 'Onboarding',       modal: 'onboarding', src: '/assets/Onboarding.svg',       cardW: 436, cardH: 231, prefetch: ['/assets/full onboarding 1.svg', '/assets/full onboarding 2.svg'] },
+  { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 220, prefetch: ['/assets/full settings.svg'] },
 ];
 
-const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, src, isActive, isHidden, breakpoint, cardWidth, cardHeight, onHover, onOpen }) {
+const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, src, prefetch, isActive, isHidden, breakpoint, cardWidth, cardHeight, onHover, onOpen }) {
   const ref = useRef(null);
+  const prefetchedRef = useRef(false);
   const [collapsed, setCollapsed] = useState(null);
   const t = { duration: DURATION, ease: EASE };
   const isSmall = breakpoint === 'small';
@@ -46,7 +46,11 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
 
   const handleMouseEnter = useCallback(() => {
     if (!isSmall) onHover(btnKey);
-  }, [isSmall, onHover, btnKey]);
+    if (!prefetchedRef.current && prefetch) {
+      prefetchedRef.current = true;
+      prefetch.forEach((s) => { const img = new Image(); img.src = s; });
+    }
+  }, [isSmall, onHover, btnKey, prefetch]);
 
   const handleClick = useCallback(() => {
     const rect = ref.current?.getBoundingClientRect();
@@ -193,7 +197,7 @@ export default function App() {
 
       {/* ====== BOTTOM NAV BUTTONS ====== */}
       <div className="bottom-nav" onMouseLeave={handleNavLeave}>
-        {NAV_BUTTONS.map(({ key, label, modal, src, cardW, cardH }) => {
+        {NAV_BUTTONS.map(({ key, label, modal, src, cardW, cardH, prefetch }) => {
           const isSmall = breakpoint === 'small';
           const isActive = !isSmall && hoveredBtn === key;
           const isHidden = breakpoint !== 'wide' && hoveredBtn && !isActive && !isSmall;
@@ -204,6 +208,7 @@ export default function App() {
               modal={modal}
               label={label}
               src={src}
+              prefetch={prefetch}
               isActive={isActive}
               isHidden={isHidden}
               breakpoint={breakpoint}
@@ -216,16 +221,14 @@ export default function App() {
         })}
       </div>
 
-      {/* ====== FULLSCREEN MODAL (lazy) ====== */}
-      <Suspense fallback={null}>
-        <Modal
-          activeCard={activeCard}
-          cardConfigs={CARD_CONFIGS}
-          originRect={originRect}
-          onClose={handleClose}
-          onExitComplete={handleExitComplete}
-        />
-      </Suspense>
+      {/* ====== FULLSCREEN MODAL ====== */}
+      <Modal
+        activeCard={activeCard}
+        cardConfigs={CARD_CONFIGS}
+        originRect={originRect}
+        onClose={handleClose}
+        onExitComplete={handleExitComplete}
+      />
     </>
   );
 }
