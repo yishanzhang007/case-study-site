@@ -1,11 +1,18 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Shader, Dither, Plasma } from 'shaders/react';
+import DitherShader from './DitherShader';
 
 const MODAL_STYLE = {
   testcall:   { title: 'Agent playground', src: '/assets/test call full.svg', opacity: 1 },
   onboarding: { title: 'Onboarding' },
   scheduling: { title: 'Routing',          src: '/assets/full settings.svg',  opacity: 1 },
   true:       { title: 'Front desk inbox', src: '/assets/full inbox.svg',     opacity: 0.85 },
+};
+
+const MODAL_COLORS = {
+  true:       { bg: '#F6F5FF', dot: '#C8C3EC' },
+  onboarding: { bg: '#D8E8D6', dot: '#74BD68' },
+  testcall:   { bg: '#E2ECF6', dot: '#99CDFC' },
+  scheduling: { bg: '#DDDDDD', dot: '#D67DA9' },
 };
 
 const EASE = [0.23, 1, 0.32, 1];
@@ -22,8 +29,8 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
             className="card-modal-backdrop"
             onClick={onClose}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            animate={{ opacity: 1, pointerEvents: 'auto' }}
+            exit={{ opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.15 }}
           >
             {(() => {
@@ -56,92 +63,27 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                     willChange: 'transform, opacity',
                   }}
                   initial={shouldReduceMotion || !initialFrame ? { opacity: 0 } : { ...initialFrame, opacity: 1 }}
-                  animate={shouldReduceMotion ? { opacity: 1 } : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1 }}
+                  animate={shouldReduceMotion ? { opacity: 1, pointerEvents: 'auto' } : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1, pointerEvents: 'auto' }}
                   exit={
                     shouldReduceMotion || !initialFrame
-                      ? { opacity: 0, transition: { duration: 0.18 } }
-                      : { ...initialFrame, opacity: 1, transition: exitTransition }
+                      ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
+                      : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
                   }
                   transition={morphTransition}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {cardConfigs[activeCard].customModal === true ? (
-                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#F6F5FF' }}>
-                      <Dither
-                        colorA="#F6F5FF"
-                        colorB="#C8C3EC"
-                        pattern="bayer8"
-                        pixelSize={3}
-                        spread={0.99}
-                        threshold={0.43}
-                        transform={{ scale: 1.33 }}>
-                        <Plasma
-                          colorA="#ffffff"
-                          contrast={0.9}
-                          density={0.3}
-                          intensity={1.2}
-                          speed={1}
-                          warp={0.52} />
-                      </Dither>
-                    </Shader>
-                  ) : cardConfigs[activeCard].customModal === 'onboarding' ? (
-                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#D8E8D6' }}>
-                      <Dither
-                        colorA="#D8E8D6"
-                        colorB="#AFCEAA"
-                        pattern="bayer8"
-                        pixelSize={3}
-                        spread={0.99}
-                        threshold={0.43}
-                        transform={{ scale: 1.33 }}>
-                        <Plasma
-                          colorA="#ffffff"
-                          contrast={0.9}
-                          density={0.3}
-                          intensity={1.2}
-                          speed={1}
-                          warp={0.52} />
-                      </Dither>
-                    </Shader>
-                  ) : cardConfigs[activeCard].customModal === 'testcall' ? (
-                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#E2ECF6' }}>
-                      <Dither
-                        colorA="#E2ECF6"
-                        colorB="#99CDFC"
-                        pattern="bayer8"
-                        pixelSize={3}
-                        spread={0.99}
-                        threshold={0.43}
-                        transform={{ scale: 1.33 }}>
-                        <Plasma
-                          colorA="#ffffff"
-                          contrast={0.9}
-                          density={0.3}
-                          intensity={1.2}
-                          speed={1}
-                          warp={0.52} />
-                      </Dither>
-                    </Shader>
-                  ) : cardConfigs[activeCard].customModal === 'scheduling' ? (
-                    <Shader style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: '#DDDDDD' }}>
-                      <Dither
-                        colorA="#DDDDDD"
-                        colorB="#D67DA9"
-                        pattern="bayer8"
-                        pixelSize={3}
-                        spread={0.99}
-                        threshold={0.43}
-                        transform={{ scale: 1.33 }}>
-                        <Plasma
-                          colorA="#ffffff"
-                          contrast={0.9}
-                          density={0.3}
-                          intensity={1.2}
-                          speed={1}
-                          warp={0.52} />
-                      </Dither>
-                    </Shader>
-                  ) : null}
+                  {(() => {
+                    const c = MODAL_COLORS[cardConfigs[activeCard].customModal] || MODAL_COLORS.true;
+                    return (
+                      <div style={{ position: 'absolute', inset: 0, backgroundColor: c.bg }}>
+                        <DitherShader
+                          colorA={c.bg}
+                          colorB={c.dot}
+                          style={{ position: 'absolute', zIndex: 0 }}
+                        />
+                      </div>
+                    );
+                  })()}
                   <motion.div
                     initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
                     animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
@@ -150,6 +92,7 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                   >
                     <button
                       onClick={onClose}
+                      aria-label="Close"
                       style={{
                         position: 'absolute', top: 12, right: 12, zIndex: 11,
                         width: 24, height: 24, borderRadius: '50%',
@@ -166,8 +109,6 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                       left: 12,
                       zIndex: 10,
                       background: 'rgba(255,255,255,0.6)',
-                      WebkitBackdropFilter: 'blur(4px)',
-                      backdropFilter: 'blur(4px)',
                       padding: '6px 10px',
                       borderRadius: 8,
                       fontFamily: "'Tobias', serif",
@@ -211,9 +152,7 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                         </div>
                       ) : (
                         <div style={{
-                          background: 'rgba(255,255,255,0.2)',
-                          backdropFilter: 'blur(8px)',
-                          WebkitBackdropFilter: 'blur(8px)',
+                          background: 'rgba(255,255,255,0.5)',
                           borderRadius: 12,
                           maxWidth: '100%',
                           display: 'flex',

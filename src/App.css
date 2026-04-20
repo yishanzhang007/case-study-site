@@ -55,9 +55,7 @@ body::after {
   font-weight: 300;
   font-size: 15px; line-height: 22px; letter-spacing: -0.01em;
   color: var(--fg-primary); text-align: left;
-  padding: 16px;
-  background: rgba(255, 255, 255, 1);
-  border-radius: 12px;
+  padding: 12px;
   position: relative;
 }
 

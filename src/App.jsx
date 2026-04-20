@@ -1,7 +1,7 @@
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, memo, lazy, Suspense } from 'react';
+import { motion } from 'framer-motion';
+import DitherShader from './DitherShader';
 
-const ShaderBackground = lazy(() => import('./ShaderBackground'));
 const Modal = lazy(() => import('./Modal'));
 
 const EASE = [0.23, 1, 0.32, 1];
@@ -23,10 +23,11 @@ const NAV_BUTTONS = [
   { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 220 },
 ];
 
-function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth, cardHeight, onMouseEnter, onClick }) {
+const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, src, isActive, isHidden, breakpoint, cardWidth, cardHeight, onHover, onOpen }) {
   const ref = useRef(null);
   const [collapsed, setCollapsed] = useState(null);
   const t = { duration: DURATION, ease: EASE };
+  const isSmall = breakpoint === 'small';
 
   // Measure collapsed size after fonts load (Tobias is wider than fallback)
   useLayoutEffect(() => {
@@ -43,6 +44,15 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
     }
   }, [isActive, collapsed]);
 
+  const handleMouseEnter = useCallback(() => {
+    if (!isSmall) onHover(btnKey);
+  }, [isSmall, onHover, btnKey]);
+
+  const handleClick = useCallback(() => {
+    const rect = ref.current?.getBoundingClientRect();
+    onOpen(modal, rect);
+  }, [onOpen, modal]);
+
   const hideStyle = isHidden
     ? (breakpoint === 'small'
       ? { display: 'none' }
@@ -53,11 +63,8 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
     <motion.div
       ref={ref}
       initial={false}
-      onMouseEnter={onMouseEnter}
-      onClick={() => {
-        const rect = ref.current?.getBoundingClientRect();
-        onClick(rect);
-      }}
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
       animate={{
         width: isActive ? cardWidth : (collapsed?.w || 'auto'),
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
@@ -94,7 +101,8 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
         src={src}
         alt={label}
         decoding="async"
-        fetchPriority="high"
+        fetchPriority="low"
+        loading="lazy"
         initial={false}
         animate={{ opacity: isActive ? 1 : 0 }}
         transition={{ duration: isActive ? 0.2 : 0.1 }}
@@ -110,22 +118,13 @@ function BottomNavButton({ label, src, isActive, isHidden, breakpoint, cardWidth
       />
     </motion.div>
   );
-}
+});
 
 export default function App() {
   const [activeCard, setActiveCard] = useState(null);
   const [originRect, setOriginRect] = useState(null);
   const [hoveredBtn, setHoveredBtn] = useState(null);
-
-  // Loading screen: wait for shader + minimum display time
-  const [shaderReady, setShaderReady] = useState(false);
-  const [minTimePassed, setMinTimePassed] = useState(false);
-  const siteReady = shaderReady && minTimePassed;
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMinTimePassed(true), 2500);
-    return () => clearTimeout(timer);
-  }, []);
+  const textCardRef = useRef(null);
 
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
@@ -153,47 +152,29 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  const handleHover = useCallback((key) => setHoveredBtn(key), []);
+  const handleOpen = useCallback((modal, rect) => {
+    if (rect) setOriginRect(rect);
+    setActiveCard(modal);
+  }, []);
+  const handleClose = useCallback(() => {
+    setActiveCard(null);
+    setHoveredBtn(null);
+  }, []);
+  const handleNavLeave = useCallback(() => setHoveredBtn(null), []);
+  const handleExitComplete = useCallback(() => setOriginRect(null), []);
+
   return (
     <>
-      {/* ====== LOADING SCREEN ====== */}
-      <AnimatePresence>
-        {!siteReady && (
-          <motion.div
-            key="loader"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: EASE }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 50,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#ffffff',
-              fontFamily: "'Tobias', serif",
-              fontWeight: 300,
-              fontSize: 15,
-              lineHeight: '22px',
-              letterSpacing: '-0.01em',
-              color: 'var(--fg-primary)',
-            }}
-          >
-            <span style={{ color: '#D75606' }}>Hi,</span> nice to meet you.
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ====== SHADER BACKGROUND (lazy) ====== */}
-      <Suspense fallback={null}>
-        <ShaderBackground onReady={() => setShaderReady(true)} />
-      </Suspense>
+      {/* ====== SHADER BACKGROUND ====== */}
+      <DitherShader safeRectRef={textCardRef} paused={!!activeCard} />
 
       {/* ====== CENTER TEXT ====== */}
       <div className="center-text-wrap">
         <div
+          ref={textCardRef}
           className="center-text"
-          style={{ padding: '16px', borderRadius: 12 }}
+          style={{ padding: '12px' }}
         >
           <div style={{ position: 'relative', zIndex: 1 }}>
             <p style={{ color: '#D75606', marginBottom: 0 }}>About</p>
@@ -211,7 +192,7 @@ export default function App() {
       </div>
 
       {/* ====== BOTTOM NAV BUTTONS ====== */}
-      <div className="bottom-nav" onMouseLeave={() => setHoveredBtn(null)}>
+      <div className="bottom-nav" onMouseLeave={handleNavLeave}>
         {NAV_BUTTONS.map(({ key, label, modal, src, cardW, cardH }) => {
           const isSmall = breakpoint === 'small';
           const isActive = !isSmall && hoveredBtn === key;
@@ -219,6 +200,8 @@ export default function App() {
           return (
             <BottomNavButton
               key={key}
+              btnKey={key}
+              modal={modal}
               label={label}
               src={src}
               isActive={isActive}
@@ -226,11 +209,8 @@ export default function App() {
               breakpoint={breakpoint}
               cardWidth={cardW * CARD_SCALE}
               cardHeight={cardH * CARD_SCALE}
-              onMouseEnter={isSmall ? undefined : () => setHoveredBtn(key)}
-              onClick={(rect) => {
-                if (rect) setOriginRect(rect);
-                setActiveCard(modal);
-              }}
+              onHover={handleHover}
+              onOpen={handleOpen}
             />
           );
         })}
@@ -242,8 +222,8 @@ export default function App() {
           activeCard={activeCard}
           cardConfigs={CARD_CONFIGS}
           originRect={originRect}
-          onClose={() => setActiveCard(null)}
-          onExitComplete={() => setOriginRect(null)}
+          onClose={handleClose}
+          onExitComplete={handleExitComplete}
         />
       </Suspense>
     </>
