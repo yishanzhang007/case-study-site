@@ -188,7 +188,7 @@ export default function App() {
             <p style={{ marginTop: 10 }}>Right now I'm spending a lot of time with AI tools. Not in a "future of work" way — more: how to move faster, try weirder ideas, and maybe finally take a crack at problems I'd always shelved as too hard.</p>
 
             <p style={{ color: '#D75606', marginTop: 16, marginBottom: 0 }}>Recent work</p>
-            <p>AI front desk assistant at Freed.ai;<br />Automatic tax filing at Shopify;<br />Analytics platform at DevRev.</p>
+            <p>Clinic AI assistant at Freed.ai;<br />Automatic tax filing at Shopify;<br />Analytics platform at DevRev.</p>
 
             <p style={{ color: '#D75606', marginTop: 16, marginBottom: 0 }}>Connect</p>
             <p><a href="mailto:yishan.zhang007@gmail.com" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>Say hi</a>, or find me <a href="https://www.linkedin.com/in/yishanzhang/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}>here</a>.</p>
