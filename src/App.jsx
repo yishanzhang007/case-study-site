@@ -16,10 +16,10 @@ const CARD_CONFIGS = {
 };
 
 const NAV_BUTTONS = [
-  { key: 'inbox',      label: 'Front desk inbox', modal: 'inbox',      src: '/assets/Inbox.svg',            cardW: 438, cardH: 228, prefetch: ['/assets/full inbox.svg'] },
-  { key: 'agent',      label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 226, prefetch: ['/assets/test call full.svg'] },
-  { key: 'onboarding', label: 'Onboarding',       modal: 'onboarding', src: '/assets/Onboarding.svg',       cardW: 436, cardH: 231, prefetch: ['/assets/full onboarding 1.svg', '/assets/full onboarding 2.svg'] },
-  { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 220, prefetch: ['/assets/full settings.svg'] },
+  { key: 'inbox',      label: 'Front desk inbox', modal: 'inbox',      src: '/assets/Inbox.svg',            cardW: 438, cardH: 208, prefetch: ['/assets/full inbox.svg'] },
+  { key: 'agent',      label: 'Agent playground', modal: 'medication', src: '/assets/agent playground.svg', cardW: 438, cardH: 206, prefetch: ['/assets/test call full.svg'] },
+  { key: 'onboarding', label: 'Onboarding',       modal: 'onboarding', src: '/assets/Onboarding.svg',       cardW: 436, cardH: 213, prefetch: ['/assets/full onboarding 1.svg', '/assets/full onboarding 2.svg'] },
+  { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 198, prefetch: ['/assets/full settings.svg'] },
 ];
 
 const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, src, prefetch, isActive, isHidden, breakpoint, cardWidth, cardHeight, onHover, onOpen }) {
@@ -116,6 +116,7 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
           width: '100%',
           height: '100%',
           objectFit: 'contain',
+          objectPosition: 'center bottom',
           pointerEvents: 'none',
           willChange: 'opacity',
         }}
