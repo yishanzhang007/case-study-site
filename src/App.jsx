@@ -88,7 +88,10 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
       <motion.span
         initial={false}
         animate={{ opacity: isActive ? 0 : 1 }}
-        transition={{ duration: isActive ? 0.05 : 0 }}
+        transition={{
+          duration: isActive ? 0.05 : 0.12,
+          delay:    isActive ? 0    : 0.15,
+        }}
         style={{
           display: 'block',
           fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
