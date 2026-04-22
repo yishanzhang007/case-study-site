@@ -129,7 +129,7 @@ export default function App() {
   const [activeCard, setActiveCard] = useState(null);
   const [originRect, setOriginRect] = useState(null);
   const [hoveredBtn, setHoveredBtn] = useState(null);
-  const textCardRef = useRef(null);
+  const navRef = useRef(null);
 
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
@@ -172,12 +172,12 @@ export default function App() {
   return (
     <>
       {/* ====== SHADER BACKGROUND ====== */}
-      <DitherShader safeRectRef={textCardRef} paused={!!activeCard} />
+      <DitherShader safeRectRef={navRef} paused={!!activeCard} />
 
-      {/* ====== CENTER TEXT ====== */}
+      {/* ====== CENTER TEXT (hidden for now — v3 experiment) ====== */}
+      {/*
       <div className="center-text-wrap">
         <div
-          ref={textCardRef}
           className="center-text"
           style={{ padding: '12px' }}
         >
@@ -195,9 +195,10 @@ export default function App() {
           </div>
         </div>
       </div>
+      */}
 
       {/* ====== BOTTOM NAV BUTTONS ====== */}
-      <div className="bottom-nav" onMouseLeave={handleNavLeave}>
+      <div ref={navRef} className="bottom-nav" onMouseLeave={handleNavLeave}>
         {NAV_BUTTONS.map(({ key, label, modal, src, cardW, cardH, prefetch }) => {
           const isSmall = breakpoint === 'small';
           const isActive = !isSmall && hoveredBtn === key;

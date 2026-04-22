@@ -82,13 +82,13 @@ body::after {
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
   position: fixed;
-  bottom: 24px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   gap: 8px;
   z-index: 20;
-  align-items: flex-end;
+  align-items: center;
 }
 
 @media (max-width: 479px) {
@@ -97,9 +97,10 @@ body::after {
     gap: 4px;
     left: 12px;
     right: 12px;
-    bottom: 24px;
-    transform: none;
-    align-items: flex-end;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    align-items: center;
   }
 }
 
