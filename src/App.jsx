@@ -91,8 +91,8 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
         transition={{ duration: isActive ? 0.05 : 0 }}
         style={{
           display: 'block',
-          fontFamily: "'Tobias', serif",
-          fontWeight: 300,
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+          fontWeight: 400,
           fontSize: 16,
           lineHeight: '22px',
           letterSpacing: '-0.01em',
