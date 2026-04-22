@@ -90,7 +90,7 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
         animate={{ opacity: isActive ? 0 : 1 }}
         transition={{
           duration: isActive ? 0.05 : 0.12,
-          delay:    isActive ? 0    : 0.15,
+          delay:    isActive ? 0    : 0.07,
         }}
         style={{
           display: 'block',
