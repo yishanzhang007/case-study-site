@@ -93,7 +93,7 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
           display: 'block',
           fontFamily: "'Tobias', serif",
           fontWeight: 300,
-          fontSize: 15,
+          fontSize: 16,
           lineHeight: '22px',
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
