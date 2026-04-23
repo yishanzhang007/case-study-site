@@ -51,17 +51,8 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
   useLayoutEffect(() => {
     if (!ref.current || isActive || collapsed) return;
     const measure = () => {
-      const el = ref.current;
-      if (!el) return;
-      // Reset inline width/height so framer-motion's stale transition value
-      // doesn't pollute the natural-size measurement on a breakpoint change.
-      const prevW = el.style.width;
-      const prevH = el.style.height;
-      el.style.width = 'auto';
-      el.style.height = 'auto';
-      const r = el.getBoundingClientRect();
-      el.style.width = prevW;
-      el.style.height = prevH;
+      if (!ref.current) return;
+      const r = ref.current.getBoundingClientRect();
       setCollapsed({ w: r.width, h: r.height });
     };
     if (document.fonts?.ready) {
