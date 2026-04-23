@@ -138,25 +138,22 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                     >
                       ✕
                     </button>
-                    <div className="modal-title" style={{
+                    {/* <div className="modal-title" style={{
                       position: 'absolute',
                       top: 12,
                       left: 12,
                       zIndex: 10,
-                      background: 'rgba(255,255,255,0.6)',
-                      padding: '6px 10px',
-                      borderRadius: 8,
-                      fontFamily: "'Tobias', serif",
-                      fontWeight: 300,
-                      fontSize: 14,
-                      lineHeight: '20px',
+                      fontFamily: "'Denim Ink', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+                      fontWeight: 400,
+                      fontSize: 16,
+                      lineHeight: '22px',
                       letterSpacing: '-0.01em',
                       textTransform: 'none',
                       color: 'var(--fg-primary)',
                       pointerEvents: 'none',
                     }}>
                       {m.title}
-                    </div>
+                    </div> */}
                     <div className="fullscreen-modal-svg-overlay" style={{
                       position: 'absolute',
                       inset: 0,

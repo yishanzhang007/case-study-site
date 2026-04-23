@@ -209,9 +209,7 @@ export default function App() {
       <DitherShader safeRectRef={navRef} safeRectRefs={cornerRefs} paused={!!activeCard} />
 
       {/* ====== CORNER LABELS ====== */}
-      <div ref={topLeftRef} className="corner-text top-left">
-        Yishan enjoys all aspects of building great products
-      </div>
+      <div ref={topLeftRef} className="corner-text top-left">Yishan</div>
       {/* <div className="corner-text top-right">About</div> */}
       <div ref={bottomLeftRef} className="corner-text bottom-left">San Francisco</div>
       <div ref={bottomRightRef} className="corner-text bottom-right">{sfTime}</div>
