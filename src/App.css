@@ -30,7 +30,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Soft vignette overlay */
+/* Soft vignette overlay (hidden)
 body::after {
   content: '';
   position: fixed;
@@ -39,6 +39,7 @@ body::after {
   pointer-events: none;
   z-index: 9999;
 }
+*/
 
 /* ============ CENTER TEXT ============ */
 .center-text-wrap {
