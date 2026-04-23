@@ -22,6 +22,21 @@ const NAV_BUTTONS = [
   { key: 'routing',    label: 'Routing',          modal: 'scheduling', src: '/assets/routing.svg',          cardW: 438, cardH: 198, prefetch: ['/assets/full settings.svg'] },
 ];
 
+function useSFTime() {
+  const fmt = () => new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/Los_Angeles',
+  }).format(new Date());
+  const [time, setTime] = useState(fmt);
+  useEffect(() => {
+    const id = setInterval(() => setTime(fmt()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, src, prefetch, isActive, isHidden, breakpoint, cardWidth, cardHeight, onHover, onOpen }) {
   const ref = useRef(null);
   const prefetchedRef = useRef(false);
@@ -29,7 +44,10 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
   const t = { duration: DURATION, ease: EASE };
   const isSmall = breakpoint === 'small';
 
-  // Measure collapsed size after fonts load (Tobias is wider than fallback)
+  // Reset cached size when breakpoint changes so we re-measure at the new font size
+  useEffect(() => { setCollapsed(null); }, [breakpoint]);
+
+  // Measure collapsed size after fonts load
   useLayoutEffect(() => {
     if (!ref.current || isActive || collapsed) return;
     const measure = () => {
@@ -86,20 +104,12 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
       }}
     >
       <motion.span
+        className="nav-label"
         initial={false}
         animate={{ opacity: isActive ? 0 : 1 }}
         transition={{
           duration: isActive ? 0.05 : 0.12,
           delay:    isActive ? 0    : 0.07,
-        }}
-        style={{
-          display: 'block',
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
-          fontWeight: 400,
-          fontSize: 16,
-          lineHeight: '22px',
-          letterSpacing: '-0.01em',
-          whiteSpace: 'nowrap',
         }}
       >
         {label}
@@ -172,10 +182,18 @@ export default function App() {
   const handleNavLeave = useCallback(() => setHoveredBtn(null), []);
   const handleExitComplete = useCallback(() => setOriginRect(null), []);
 
+  const sfTime = useSFTime();
+
   return (
     <>
       {/* ====== SHADER BACKGROUND ====== */}
       <DitherShader safeRectRef={navRef} paused={!!activeCard} />
+
+      {/* ====== CORNER LABELS ====== */}
+      <div className="corner-text top-left">Yishan</div>
+      <div className="corner-text top-right">About</div>
+      <div className="corner-text bottom-left">San Francisco</div>
+      <div className="corner-text bottom-right">{sfTime}</div>
 
       {/* ====== CENTER TEXT (hidden for now — v3 experiment) ====== */}
       {/*

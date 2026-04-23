@@ -104,6 +104,44 @@ body::after {
   }
 }
 
+/* ============ CORNER LABELS ============ */
+.corner-text {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--fg-primary);
+}
+.corner-text.top-left     { top: 16px;    left: 16px; }
+.corner-text.top-right    { top: 16px;    right: 16px; }
+.corner-text.bottom-left  { bottom: 16px; left: 16px;  color: var(--fg-muted); }
+.corner-text.bottom-right { bottom: 16px; right: 16px; color: var(--fg-muted); }
+
+/* ============ NAV BUTTON LABEL ============ */
+.nav-label {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* ============ RESPONSIVE: < 800px, labels shrink to 14px ============ */
+@media (max-width: 799px) {
+  .corner-text,
+  .nav-label {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
 /* ============ FULLSCREEN MODAL ============ */
 .card-modal-backdrop {
   position: fixed;
