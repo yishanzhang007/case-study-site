@@ -142,12 +142,12 @@ body::after {
 /* ============ RESPONSIVE: < 800px ============ */
 @media (max-width: 799px) {
   .corner-text {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 20px;
   }
   .nav-label {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 20px;
   }
 }
 
