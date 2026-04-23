@@ -210,7 +210,7 @@ export default function App() {
 
       {/* ====== CORNER LABELS ====== */}
       <div ref={topLeftRef} className="corner-text top-left">
-        Yishan enjoys all aspects of building products
+        Yishan enjoys all aspects of building great products
       </div>
       {/* <div className="corner-text top-right">About</div> */}
       <div ref={bottomLeftRef} className="corner-text bottom-left">San Francisco</div>
