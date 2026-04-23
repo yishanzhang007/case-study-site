@@ -87,9 +87,13 @@ body::after {
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  gap: 0;
+  gap: 2px;
   z-index: 20;
   align-items: center;
+}
+
+@media (max-width: 799px) {
+  .bottom-nav { gap: 0; }
 }
 
 @media (max-width: 479px) {
