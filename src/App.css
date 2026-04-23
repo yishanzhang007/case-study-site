@@ -124,20 +124,25 @@ body::after {
   white-space: nowrap;
   color: var(--fg-primary);
 }
-.corner-text.top-left     { top: 16px;    left: 18px; }
-.corner-text.top-right    { top: 16px;    right: 18px; }
-.corner-text.bottom-left  { bottom: 16px; left: 18px;  color: var(--fg-muted); }
-.corner-text.bottom-right { bottom: 16px; right: 18px; color: var(--fg-muted); }
+.corner-text.top-left     { top: 12px;    left: 14px; }
+.corner-text.top-right    { top: 12px;    right: 14px; }
+.corner-text.bottom-left  { bottom: 12px; left: 14px;  color: #AFADA7; }
+.corner-text.bottom-right { bottom: 12px; right: 14px; color: #AFADA7; }
 
 /* ============ NAV BUTTON LABEL ============ */
 .nav-label {
   display: block;
   font-family: 'Denim Ink', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 16px;
   line-height: 22px;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: #F3F3F1;
+  text-decoration-thickness: 12%;
+  text-decoration-skip-ink: auto;
+  text-underline-offset: 2px;
 }
 
 /* ============ RESPONSIVE: < 800px ============ */

@@ -25,7 +25,8 @@ precision highp float;
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform sampler2D u_gridTex;
-uniform vec4 u_safeRect;
+uniform vec4 u_safeRects[5];
+uniform int u_safeCount;
 uniform vec3 u_colorA;
 uniform vec3 u_colorB;
 
@@ -93,18 +94,21 @@ void main() {
   uv           -= disp;
   uv            = clamp(uv, vec2(0.0), vec2(1.0)); // match edges: 'stretch'
 
-  // Safe area occlusion (no UV distortion — waves flow past, rect simply occludes)
+  // Safe area occlusion (no UV distortion — waves flow past, rects simply occlude)
   float safeFade = 1.0;
-  if (u_safeRect.z > 0.0) {
-    vec2 rc = u_safeRect.xy + u_safeRect.zw * 0.5;
-    vec2 hs = u_safeRect.zw * 0.5;
+  for (int i = 0; i < 5; i++) {
+    if (i >= u_safeCount) break;
+    vec4 r = u_safeRects[i];
+    if (r.z <= 0.0) continue;
+    vec2 rc = r.xy + r.zw * 0.5;
+    vec2 hs = r.zw * 0.5;
     float sd = sdRect(uv, rc, hs);
-    safeFade = smoothstep(-0.04, 0.08, sd);
+    safeFade = min(safeFade, smoothstep(-0.04, 0.08, sd));
   }
 
   // Noise — lower scale = bigger cluster features
   vec2 nUV = vec2(uv.x * aspect, uv.y) * 0.6;
-  float t = u_time * 0.45;
+  float t = u_time * 0.675;
 
   float n = snoise(nUV + vec2(t * 0.15, t * 0.13));
   float noise01 = clamp(n * 0.5 + 0.5, 0.0, 1.0);
@@ -125,7 +129,7 @@ void main() {
   fragColor = vec4(color, 1.0);
 }`;
 
-export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff', colorB = '#A3A3A3', style, paused = false }) {
+export default function DitherShader({ onReady, safeRectRef, safeRectRefs, colorA = '#ffffff', colorB = '#A3A3A3', style, paused = false }) {
   const canvasRef = useRef(null);
   const glRef = useRef(null);
   const programRef = useRef(null);
@@ -215,7 +219,8 @@ export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff',
     const uTime = gl.getUniformLocation(program, 'u_time');
     const uRes = gl.getUniformLocation(program, 'u_resolution');
     const uGridTex = gl.getUniformLocation(program, 'u_gridTex');
-    const uSafeRect = gl.getUniformLocation(program, 'u_safeRect');
+    const uSafeRects = [0,1,2,3,4].map(i => gl.getUniformLocation(program, `u_safeRects[${i}]`));
+    const uSafeCount = gl.getUniformLocation(program, 'u_safeCount');
     const uColorA = gl.getUniformLocation(program, 'u_colorA');
     const uColorB = gl.getUniformLocation(program, 'u_colorB');
     gl.uniform1i(uGridTex, 0); // sampler2D binds to TEXTURE0
@@ -325,17 +330,19 @@ export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff',
       gl.uniform3fv(uColorA, colorsRef.current.a);
       gl.uniform3fv(uColorB, colorsRef.current.b);
 
-      if (safeRectRef?.current) {
-        const el = safeRectRef.current;
-        const rect = el.getBoundingClientRect();
+      const refs = [];
+      if (safeRectRef?.current) refs.push(safeRectRef);
+      if (safeRectRefs) for (const r of safeRectRefs) if (r?.current) refs.push(r);
+      const count = Math.min(refs.length, 5);
+      for (let i = 0; i < count; i++) {
+        const rect = refs[i].current.getBoundingClientRect();
         const nx = rect.left / window.innerWidth;
         const ny = 1.0 - (rect.bottom) / window.innerHeight;
         const nw = rect.width / window.innerWidth;
         const nh = rect.height / window.innerHeight;
-        gl.uniform4f(uSafeRect, nx, ny, nw, nh);
-      } else {
-        gl.uniform4f(uSafeRect, 0, 0, 0, 0);
+        gl.uniform4f(uSafeRects[i], nx, ny, nw, nh);
       }
+      gl.uniform1i(uSafeCount, count);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       rafRef.current = requestAnimationFrame(render);
@@ -356,7 +363,7 @@ export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff',
       gl.deleteTexture(gridTex);
       gridTexRef.current = null;
     };
-  }, [onReady, handleMouseMove, safeRectRef]);
+  }, [onReady, handleMouseMove, safeRectRef, safeRectRefs]);
 
   return (
     <canvas

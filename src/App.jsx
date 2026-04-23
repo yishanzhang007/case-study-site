@@ -158,6 +158,10 @@ export default function App() {
   const [originRect, setOriginRect] = useState(null);
   const [hoveredBtn, setHoveredBtn] = useState(null);
   const navRef = useRef(null);
+  const topLeftRef = useRef(null);
+  const bottomLeftRef = useRef(null);
+  const bottomRightRef = useRef(null);
+  const cornerRefs = useRef([topLeftRef, bottomLeftRef, bottomRightRef]).current;
 
   const [breakpoint, setBreakpoint] = useState(() => {
     if (typeof window === 'undefined') return 'wide';
@@ -202,16 +206,15 @@ export default function App() {
   return (
     <>
       {/* ====== SHADER BACKGROUND ====== */}
-      <DitherShader safeRectRef={navRef} paused={!!activeCard} />
+      <DitherShader safeRectRef={navRef} safeRectRefs={cornerRefs} paused={!!activeCard} />
 
       {/* ====== CORNER LABELS ====== */}
-      <div className="corner-text top-left">
-        Yishan is a generalist<br />
-        who enjoys all aspects of building products
+      <div ref={topLeftRef} className="corner-text top-left">
+        Yishan enjoys all aspects of building products
       </div>
-      <div className="corner-text top-right">About</div>
-      <div className="corner-text bottom-left">San Francisco</div>
-      <div className="corner-text bottom-right">{sfTime}</div>
+      {/* <div className="corner-text top-right">About</div> */}
+      <div ref={bottomLeftRef} className="corner-text bottom-left">San Francisco</div>
+      <div ref={bottomRightRef} className="corner-text bottom-right">{sfTime}</div>
 
       {/* ====== CENTER TEXT (hidden for now — v3 experiment) ====== */}
       {/*
