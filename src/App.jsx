@@ -189,7 +189,8 @@ export default function App() {
       {/* ====== SHADER BACKGROUND ====== */}
       <DitherShader safeRectRef={navRef} paused={!!activeCard} />
 
-      {/* ====== CORNER LABELS ====== */}
+      {/* ====== CORNER LABELS (hidden) ====== */}
+      {/*
       <div className="corner-text top-left">
         Yishan is a generalist product designer<br />
         who enjoys all aspects of building a great product
@@ -197,6 +198,7 @@ export default function App() {
       <div className="corner-text top-right">About</div>
       <div className="corner-text bottom-left">San Francisco</div>
       <div className="corner-text bottom-right">{sfTime}</div>
+      */}
 
       {/* ====== CENTER TEXT (hidden for now — v3 experiment) ====== */}
       {/*
