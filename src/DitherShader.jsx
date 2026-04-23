@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback } from 'react';
 
 const GRID_N = 105;
 const GRID_DECAY = 3.5;
-const GRID_INTENSITY = 12.0;
+const GRID_INTENSITY = 6.0;
 const GRID_RADIUS = 3.0;
 const GRID_R_EFF = GRID_RADIUS * 0.05;
 
@@ -103,21 +103,21 @@ void main() {
   }
 
   // Noise — lower scale = bigger cluster features
-  vec2 nUV = vec2(uv.x * aspect, uv.y) * 0.10;
+  vec2 nUV = vec2(uv.x * aspect, uv.y) * 0.6;
   float t = u_time * 0.3;
 
   float n = snoise(nUV + vec2(t * 0.15, t * 0.13));
   float noise01 = clamp(n * 0.5 + 0.5, 0.0, 1.0);
   float densityBig = smoothstep(0.70, 1.20, noise01);
 
-  float nSmall = snoise(nUV * 5.0 + vec2(t * 0.4, -t * 0.3));
+  float nSmall = snoise(nUV * 1.5 + vec2(t * 0.4, -t * 0.3));
   float small01 = clamp(nSmall * 0.5 + 0.5, 0.0, 1.0);
   float densitySmall = smoothstep(0.65, 1.05, small01) * 0.5;
 
-  float dotDensity = max(densityBig, densitySmall) * 0.4;
+  float dotDensity = max(densityBig, densitySmall) * 0.1;
   dotDensity *= safeFade;
 
-  vec2 pc = floor(gl_FragCoord.xy / 3.0);
+  vec2 pc = floor(gl_FragCoord.xy / 2.0);
   float bv = bayer8(pc);
   float dot = step(bv + 0.02, dotDensity);
 
@@ -125,7 +125,7 @@ void main() {
   fragColor = vec4(color, 1.0);
 }`;
 
-export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff', colorB = '#b8b8b8', style, paused = false }) {
+export default function DitherShader({ onReady, safeRectRef, colorA = '#ffffff', colorB = '#A3A3A3', style, paused = false }) {
   const canvasRef = useRef(null);
   const glRef = useRef(null);
   const programRef = useRef(null);
