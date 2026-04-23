@@ -124,10 +124,10 @@ body::after {
   white-space: nowrap;
   color: var(--fg-primary);
 }
-.corner-text.top-left     { top: 12px;    left: 14px; }
-.corner-text.top-right    { top: 12px;    right: 14px; }
-.corner-text.bottom-left  { bottom: 12px; left: 14px;  color: #AFADA7; }
-.corner-text.bottom-right { bottom: 12px; right: 14px; color: #AFADA7; }
+.corner-text.top-left     { top: 16px;    left: 18px; }
+.corner-text.top-right    { top: 16px;    right: 18px; }
+.corner-text.bottom-left  { bottom: 16px; left: 18px;  color: #AFADA7; }
+.corner-text.bottom-right { bottom: 16px; right: 18px; color: #AFADA7; }
 
 /* ============ NAV BUTTON LABEL ============ */
 .nav-label {
