@@ -51,8 +51,23 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
   useLayoutEffect(() => {
     if (!ref.current || isActive || collapsed) return;
     const measure = () => {
-      if (!ref.current) return;
-      const r = ref.current.getBoundingClientRect();
+      const el = ref.current;
+      if (!el) return;
+      // Framer-motion may still be mid-transitioning inline width/height/padding
+      // after a breakpoint change. Override them with the current breakpoint's
+      // final values so the natural-size measurement is correct in both directions.
+      const s = el.style;
+      const prev = {
+        width: s.width, height: s.height,
+        paddingTop: s.paddingTop, paddingRight: s.paddingRight,
+        paddingBottom: s.paddingBottom, paddingLeft: s.paddingLeft,
+      };
+      const padH = breakpoint === 'wide' ? 14 : 2;
+      s.width = 'auto';
+      s.height = 'auto';
+      s.padding = `8px ${padH}px`;
+      const r = el.getBoundingClientRect();
+      Object.assign(s, prev);
       setCollapsed({ w: r.width, h: r.height });
     };
     if (document.fonts?.ready) {
@@ -189,8 +204,7 @@ export default function App() {
       {/* ====== SHADER BACKGROUND ====== */}
       <DitherShader safeRectRef={navRef} paused={!!activeCard} />
 
-      {/* ====== CORNER LABELS (hidden) ====== */}
-      {/*
+      {/* ====== CORNER LABELS ====== */}
       <div className="corner-text top-left">
         Yishan is a generalist product designer<br />
         who enjoys all aspects of building a great product
@@ -198,7 +212,6 @@ export default function App() {
       <div className="corner-text top-right">About</div>
       <div className="corner-text bottom-left">San Francisco</div>
       <div className="corner-text bottom-right">{sfTime}</div>
-      */}
 
       {/* ====== CENTER TEXT (hidden for now — v3 experiment) ====== */}
       {/*
