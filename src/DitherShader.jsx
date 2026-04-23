@@ -104,15 +104,15 @@ void main() {
 
   // Noise — lower scale = bigger cluster features
   vec2 nUV = vec2(uv.x * aspect, uv.y) * 0.6;
-  float t = u_time * 0.3;
+  float t = u_time * 0.45;
 
   float n = snoise(nUV + vec2(t * 0.15, t * 0.13));
   float noise01 = clamp(n * 0.5 + 0.5, 0.0, 1.0);
-  float densityBig = smoothstep(0.70, 1.20, noise01);
+  float densityBig = smoothstep(0.45, 1.20, noise01);
 
   float nSmall = snoise(nUV * 1.5 + vec2(t * 0.4, -t * 0.3));
   float small01 = clamp(nSmall * 0.5 + 0.5, 0.0, 1.0);
-  float densitySmall = smoothstep(0.65, 1.05, small01) * 0.5;
+  float densitySmall = smoothstep(0.65, 1.05, small01) * 0.2;
 
   float dotDensity = max(densityBig, densitySmall) * 0.1;
   dotDensity *= safeFade;
