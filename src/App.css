@@ -117,10 +117,10 @@ body::after {
   white-space: nowrap;
   color: var(--fg-primary);
 }
-.corner-text.top-left     { top: 16px;    left: 16px; }
-.corner-text.top-right    { top: 16px;    right: 16px; }
-.corner-text.bottom-left  { bottom: 16px; left: 16px;  color: var(--fg-muted); }
-.corner-text.bottom-right { bottom: 16px; right: 16px; color: var(--fg-muted); }
+.corner-text.top-left     { top: 16px;    left: 18px; }
+.corner-text.top-right    { top: 16px;    right: 18px; }
+.corner-text.bottom-left  { bottom: 16px; left: 18px;  color: var(--fg-muted); }
+.corner-text.bottom-right { bottom: 16px; right: 18px; color: var(--fg-muted); }
 
 /* ============ NAV BUTTON LABEL ============ */
 .nav-label {
