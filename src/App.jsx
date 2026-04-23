@@ -206,8 +206,8 @@ export default function App() {
 
       {/* ====== CORNER LABELS ====== */}
       <div className="corner-text top-left">
-        Yishan is a generalist product designer<br />
-        who enjoys all aspects of building a great product
+        Yishan is a generalist<br />
+        who enjoys all aspects of building products
       </div>
       <div className="corner-text top-right">About</div>
       <div className="corner-text bottom-left">San Francisco</div>

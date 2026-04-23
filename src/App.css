@@ -107,7 +107,7 @@ body::after {
     top: 50%;
     bottom: auto;
     transform: translateY(-50%);
-    align-items: center;
+    align-items: flex-start;
   }
 }
 
