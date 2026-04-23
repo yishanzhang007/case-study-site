@@ -86,7 +86,7 @@ body::after {
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  gap: 8px;
+  gap: 4px;
   z-index: 20;
   align-items: center;
 }
