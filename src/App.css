@@ -99,7 +99,8 @@ body::after {
 
 @media (max-width: 479px) {
   .bottom-nav {
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 0;
     left: 12px;
     right: 12px;
