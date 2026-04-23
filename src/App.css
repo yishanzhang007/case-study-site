@@ -118,8 +118,8 @@ body::after {
   pointer-events: none;
   font-family: 'Denim Ink', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 14px;
+  line-height: 20px;
   letter-spacing: -0.01em;
   white-space: nowrap;
   color: var(--fg-primary);
