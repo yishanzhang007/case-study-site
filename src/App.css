@@ -87,7 +87,7 @@ body::after {
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  gap: 4px;
+  gap: 0;
   z-index: 20;
   align-items: center;
 }
@@ -95,7 +95,7 @@ body::after {
 @media (max-width: 479px) {
   .bottom-nav {
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 0;
     left: 12px;
     right: 12px;
     top: 50%;
