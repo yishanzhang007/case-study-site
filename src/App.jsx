@@ -90,7 +90,7 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
       animate={{
         width: isActive ? cardWidth : (collapsed?.w || 'auto'),
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
-        padding: isActive ? '0px' : (breakpoint === 'wide' ? '8px 20px' : '8px 8px'),
+        padding: isActive ? '0px' : (breakpoint === 'wide' ? '8px 16px' : '8px 4px'),
         backgroundColor: isActive ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,1)',
       }}
       transition={t}

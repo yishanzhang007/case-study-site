@@ -93,17 +93,12 @@ void main() {
   uv           -= disp;
   uv            = clamp(uv, vec2(0.0), vec2(1.0)); // match edges: 'stretch'
 
-  // Safe area repulsion
+  // Safe area occlusion (no UV distortion — waves flow past, rect simply occludes)
   float safeFade = 1.0;
   if (u_safeRect.z > 0.0) {
     vec2 rc = u_safeRect.xy + u_safeRect.zw * 0.5;
-    vec2 hs = u_safeRect.zw * 0.5 * 1.0;
+    vec2 hs = u_safeRect.zw * 0.5;
     float sd = sdRect(uv, rc, hs);
-    float repel = 1.0 - smoothstep(-0.18, 0.28, sd);
-    vec2 rd = uv - rc;
-    float rl = length(rd);
-    rd = (rl > 0.001) ? rd / rl : vec2(0.0);
-    uv += rd * repel * 0.9;
     safeFade = smoothstep(-0.04, 0.08, sd);
   }
 
