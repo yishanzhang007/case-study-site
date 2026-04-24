@@ -63,9 +63,10 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
         paddingBottom: s.paddingBottom, paddingLeft: s.paddingLeft,
       };
       const padH = breakpoint === 'wide' ? 14 : breakpoint === 'medium' ? 6 : 2;
+      const padV = breakpoint === 'small' ? 4 : 8;
       s.width = 'auto';
       s.height = 'auto';
-      s.padding = `8px ${padH}px`;
+      s.padding = `${padV}px ${padH}px`;
       const r = el.getBoundingClientRect();
       Object.assign(s, prev);
       setCollapsed({ w: r.width, h: r.height });
@@ -105,7 +106,7 @@ const BottomNavButton = memo(function BottomNavButton({ btnKey, modal, label, sr
       animate={{
         width: isActive ? cardWidth : (collapsed?.w || 'auto'),
         height: isActive ? cardHeight : (collapsed?.h || 'auto'),
-        padding: isActive ? '0px' : (breakpoint === 'wide' ? '8px 14px' : breakpoint === 'medium' ? '8px 6px' : '8px 2px'),
+        padding: isActive ? '0px' : (breakpoint === 'wide' ? '8px 14px' : breakpoint === 'medium' ? '8px 6px' : '4px 2px'),
         backgroundColor: isActive ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,1)',
       }}
       transition={t}
