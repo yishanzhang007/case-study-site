@@ -18,7 +18,7 @@ const MODAL_COLORS = {
 
 const EASE = [0.23, 1, 0.32, 1];
 
-export default function Modal({ activeCard, cardConfigs, originRect, onClose, onExitComplete }) {
+export default function Modal({ activeCard, cardConfigs, originRect, breakpoint, onClose, onExitComplete }) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -60,6 +60,7 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
                   shouldReduceMotion={shouldReduceMotion}
                   colorBg={c.bg}
                   colorDot={c.dot}
+                  breakpoint={breakpoint}
                   onClose={onClose}
                 />
               );
@@ -71,9 +72,13 @@ export default function Modal({ activeCard, cardConfigs, originRect, onClose, on
   );
 }
 
-function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, exitTransition, shouldReduceMotion, colorBg, colorDot, onClose }) {
+function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, exitTransition, shouldReduceMotion, colorBg, colorDot, breakpoint, onClose }) {
   const [shaderReady, setShaderReady] = useState(false);
   const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
+  const isSmall = breakpoint === 'small';
+
+  const drawerTransition = { duration: 0.35, ease: EASE };
+  const drawerExitTransition = { duration: 0.28, ease: EASE };
 
   return (
     <>
@@ -90,16 +95,30 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                     transformOrigin: 'center center',
                     willChange: 'transform, opacity',
                   }}
-                  initial={shouldReduceMotion || !initialFrame ? { opacity: 0 } : { ...initialFrame, opacity: 1 }}
-                  animate={shouldReduceMotion ? { opacity: 1, pointerEvents: 'auto' } : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1, pointerEvents: 'auto' }}
-                  exit={
-                    shouldReduceMotion || !initialFrame
-                      ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
-                      : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
+                  initial={
+                    isSmall
+                      ? { y: '100%', opacity: 1 }
+                      : shouldReduceMotion || !initialFrame
+                        ? { opacity: 0 }
+                        : { ...initialFrame, opacity: 1 }
                   }
-                  transition={morphTransition}
+                  animate={
+                    isSmall
+                      ? { y: 0, opacity: 1, pointerEvents: 'auto' }
+                      : shouldReduceMotion
+                        ? { opacity: 1, pointerEvents: 'auto' }
+                        : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1, pointerEvents: 'auto' }
+                  }
+                  exit={
+                    isSmall
+                      ? { y: '100%', opacity: 1, pointerEvents: 'none', transition: drawerExitTransition }
+                      : shouldReduceMotion || !initialFrame
+                        ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
+                        : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
+                  }
+                  transition={isSmall ? drawerTransition : morphTransition}
                   onAnimationComplete={(def) => {
-                    if (def && def.scaleX === 1) setShaderReady(true);
+                    if (def && (def.scaleX === 1 || (isSmall && def.y === 0))) setShaderReady(true);
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >

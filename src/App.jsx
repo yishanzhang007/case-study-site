@@ -268,6 +268,7 @@ export default function App() {
         activeCard={activeCard}
         cardConfigs={CARD_CONFIGS}
         originRect={originRect}
+        breakpoint={breakpoint}
         onClose={handleClose}
         onExitComplete={handleExitComplete}
       />
