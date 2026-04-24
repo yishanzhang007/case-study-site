@@ -77,8 +77,8 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
   const [shaderReady, setShaderReady] = useState(isSmall);
   const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
 
-  const drawerTransition     = { type: 'spring', duration: 0.5,  bounce: 0.15 };
-  const drawerExitTransition = { type: 'spring', duration: 0.35, bounce: 0    };
+  const drawerTransition     = { type: 'spring', duration: 0.5,  bounce: 0 };
+  const drawerExitTransition = { type: 'spring', duration: 0.35, bounce: 0 };
 
   return (
     <>
