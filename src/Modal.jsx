@@ -73,12 +73,12 @@ export default function Modal({ activeCard, cardConfigs, originRect, breakpoint,
 }
 
 function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, exitTransition, shouldReduceMotion, colorBg, colorDot, breakpoint, onClose }) {
-  const [shaderReady, setShaderReady] = useState(false);
-  const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
   const isSmall = breakpoint === 'small';
+  const [shaderReady, setShaderReady] = useState(isSmall);
+  const m = MODAL_STYLE[cardConfigs[activeCard].customModal] || MODAL_STYLE.true;
 
-  const drawerTransition = { duration: 0.35, ease: EASE };
-  const drawerExitTransition = { duration: 0.28, ease: EASE };
+  const drawerTransition     = { type: 'spring', duration: 0.5,  bounce: 0.15 };
+  const drawerExitTransition = { type: 'spring', duration: 0.35, bounce: 0    };
 
   return (
     <>
@@ -96,25 +96,31 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                     willChange: 'transform, opacity',
                   }}
                   initial={
-                    isSmall
-                      ? { y: '100%', opacity: 1 }
-                      : shouldReduceMotion || !initialFrame
-                        ? { opacity: 0 }
-                        : { ...initialFrame, opacity: 1 }
+                    isSmall && shouldReduceMotion
+                      ? { opacity: 0 }
+                      : isSmall
+                        ? { y: '100%', opacity: 1 }
+                        : shouldReduceMotion || !initialFrame
+                          ? { opacity: 0 }
+                          : { ...initialFrame, opacity: 1 }
                   }
                   animate={
-                    isSmall
-                      ? { y: 0, opacity: 1, pointerEvents: 'auto' }
-                      : shouldReduceMotion
-                        ? { opacity: 1, pointerEvents: 'auto' }
-                        : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1, pointerEvents: 'auto' }
+                    isSmall && shouldReduceMotion
+                      ? { opacity: 1, pointerEvents: 'auto' }
+                      : isSmall
+                        ? { y: 0, opacity: 1, pointerEvents: 'auto' }
+                        : shouldReduceMotion
+                          ? { opacity: 1, pointerEvents: 'auto' }
+                          : { scaleX: 1, scaleY: 1, x: 0, y: 0, opacity: 1, pointerEvents: 'auto' }
                   }
                   exit={
-                    isSmall
-                      ? { y: '100%', opacity: 1, pointerEvents: 'none', transition: drawerExitTransition }
-                      : shouldReduceMotion || !initialFrame
-                        ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
-                        : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
+                    isSmall && shouldReduceMotion
+                      ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
+                      : isSmall
+                        ? { y: '100%', opacity: 1, pointerEvents: 'none', transition: drawerExitTransition }
+                        : shouldReduceMotion || !initialFrame
+                          ? { opacity: 0, pointerEvents: 'none', transition: { duration: 0.18 } }
+                          : { ...initialFrame, opacity: 1, pointerEvents: 'none', transition: exitTransition }
                   }
                   transition={isSmall ? drawerTransition : morphTransition}
                   onAnimationComplete={(def) => {
@@ -125,9 +131,9 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                   <div style={{ position: 'absolute', inset: 0, backgroundColor: colorBg }}>
                     {shaderReady && (
                       <motion.div
-                        initial={{ opacity: 0 }}
+                        initial={isSmall ? false : { opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        transition={{ duration: isSmall ? 0 : 0.2, ease: 'easeOut' }}
                         style={{ position: 'absolute', inset: 0 }}
                       >
                         <DitherShader
@@ -139,8 +145,8 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                     )}
                   </div>
                   <motion.div
-                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-                    animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } }}
+                    initial={isSmall ? { opacity: 1 } : (shouldReduceMotion ? { opacity: 1 } : { opacity: 0 })}
+                    animate={isSmall ? { opacity: 1 } : (shouldReduceMotion ? { opacity: 1 } : { opacity: 1, transition: { duration: 0.28 } })}
                     exit={{ opacity: 0, transition: { duration: 0.22 } }}
                     style={{ position: 'absolute', inset: 0 }}
                   >
