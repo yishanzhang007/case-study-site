@@ -198,13 +198,13 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                           maxHeight: '100%',
                           flexShrink: 0,
                         }}>
-                          <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 12, background: 'transparent' }} />
-                          <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 12, background: 'transparent' }} />
+                          <img src="/assets/full onboarding 1.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 8, background: 'transparent' }} />
+                          <img src="/assets/full onboarding 2.svg" alt="" style={{ maxWidth: '100%', height: 'auto', opacity: 1, borderRadius: 8, background: 'transparent' }} />
                         </div>
                       ) : (
                         <div style={{
                           background: 'rgba(255,255,255,0.5)',
-                          borderRadius: 12,
+                          borderRadius: 8,
                           maxWidth: '100%',
                           display: 'flex',
                           overflow: 'hidden',
@@ -218,7 +218,7 @@ function ModalContent({ activeCard, cardConfigs, initialFrame, morphTransition, 
                               height: 'auto',
                               display: 'block',
                               opacity: m.opacity,
-                              borderRadius: 12,
+                              borderRadius: 8,
                             }}
                           />
                         </div>
