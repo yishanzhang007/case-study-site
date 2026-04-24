@@ -175,5 +175,15 @@ body::after {
   will-change: transform;
 }
 
+@media (max-width: 479px) {
+  .card-modal-content {
+    border-radius: 8px !important;
+  }
+  .fullscreen-modal-svg-overlay {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}
+
 /* SVG positioning: content divs use margin:auto 0 for safe centering
    — centers when SVG fits, pins to top when it overflows (bottom clipped) */
